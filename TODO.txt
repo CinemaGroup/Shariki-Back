@@ -1,0 +1,13 @@
+Schemas
+User - harcnel profili paherov ✅?
+Order - ✅
+OrderItem - ✅
+Collection - ТОВАРЫ К ПРАЗДНИКАМ и тд. - ✅
+CollectionItem - НОВЫЙ ГОД и тд. - ✅
+Service - ФИГУРЫ ИЗ ШАРОВ, ФОТОЗОНЫ и тд. - ✅?
+Tag - Дни рождения, Девушке и тд. - ✅
+Category - Иерархические в каталоге - ✅
+Type - Метка на карточке с иконкой - ✅
+Product - ✅
+Color - ✅
+Size - ✅

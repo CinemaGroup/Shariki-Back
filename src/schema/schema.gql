@@ -1,0 +1,333 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+input AuthLoginInput {
+  loginOrEmail: String!
+  password: String!
+}
+
+input AuthRegisterInput {
+  email: String!
+  login: String!
+  password: String!
+}
+
+type AuthResponse {
+  accessToken: String!
+  user: User!
+}
+
+type Billing {
+  address: String!
+  city: String!
+  createdAt: DateTime!
+  firstName: String!
+  id: Int!
+  phone: String!
+  profile: Profile!
+  profileId: Int!
+  updatedAt: DateTime!
+}
+
+type Category {
+  categories: [Category!]!
+  createdAt: DateTime!
+  id: Int!
+  name: String!
+  parent: Category
+  parentId: Int
+  products: [Product!]!
+  slug: String!
+  status: Status!
+  updatedAt: DateTime!
+}
+
+type Characteristic {
+  createdAt: DateTime!
+  id: Int!
+  name: String!
+  product: Product!
+  productId: Int!
+  updatedAt: DateTime!
+  value: String!
+}
+
+type Collection {
+  createdAt: DateTime!
+  id: Int!
+  items: [CollectionItem!]!
+  name: String!
+  status: Status!
+  updatedAt: DateTime!
+}
+
+type CollectionItem {
+  collection: Collection!
+  collectionId: Int!
+  createdAt: DateTime!
+  id: Int!
+  imagePath: String!
+  name: String!
+  products: [Product!]!
+  slug: String!
+  status: Status!
+  updatedAt: DateTime!
+}
+
+type Color {
+  color: String!
+  createdAt: DateTime!
+  id: Int!
+  oldPrice: Float
+  price: Float!
+  product: Product!
+  productId: Int!
+  updatedAt: DateTime!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type Mutation {
+  createPost: Post!
+  createReview: Review!
+  createTag: Tag!
+  deletePost(id: Int!): Post!
+  deleteReview(id: Int!): Review!
+  deleteTag(id: Int!): Tag!
+  login(data: AuthLoginInput!): AuthResponse!
+  logout: Boolean!
+  newTokens: AuthResponse!
+  register(data: AuthRegisterInput!): AuthResponse!
+  togglePost(id: Int!): Post!
+  toggleReview(id: Int!): Review!
+  toggleTag(id: Int!): Tag!
+  updatePost(data: PostInput!, id: Int!): Post!
+  updateReview(data: ReviewInput!, id: Int!): Review!
+  updateTag(data: TagInput!, id: Int!): Tag!
+}
+
+type Order {
+  createdAt: DateTime!
+  id: Int!
+  items: [OrderItem!]!
+  method: PaymentMethod!
+  status: OrderStatus!
+  total: Int!
+  updatedAt: DateTime!
+  user: User!
+  userId: Int!
+}
+
+type OrderItem {
+  createdAt: DateTime!
+  id: Int!
+  oldPrice: Float
+  order: Order!
+  orderId: Int!
+  price: Float!
+  product: Product!
+  productId: Int!
+  quantity: Int!
+  updatedAt: DateTime!
+}
+
+enum OrderStatus {
+  CANCELED
+  COMPLETED
+  IN_PROCESS
+  ON_HOLD
+  PENDING
+  REFUNDED
+}
+
+enum PaymentMethod {
+  YOOKASSA
+}
+
+type Post {
+  bigPoster: String!
+  createdAt: DateTime!
+  description: String!
+  excerpt: String!
+  id: Int!
+  name: String!
+  poster: String!
+  rubrics: [Rubric!]!
+  slug: String!
+  status: Status!
+  updatedAt: DateTime!
+}
+
+input PostInput {
+  bigPoster: String!
+  description: String!
+  excerpt: String!
+  name: String!
+  poster: String!
+  rubrics: [Int!]!
+}
+
+type Product {
+  boughtTimes: Int!
+  categories: [Category!]!
+  characteristics: [Characteristic!]!
+  collections: [CollectionItem!]!
+  colors: [Color!]!
+  createdAt: DateTime!
+  description: String!
+  iconPath: String
+  id: Int!
+  images: [String!]!
+  name: String!
+  oldPrice: String
+  orderItems: [OrderItem!]!
+  packageQuantity: Int!
+  price: String!
+  sizes: [Size!]!
+  sku: String!
+  slug: String!
+  status: Status!
+  tags: [Tag!]!
+  type: Type!
+  typeId: Int!
+  updatedAt: DateTime!
+  views: Int!
+}
+
+type Profile {
+  avatarPath: String!
+  billing: Billing!
+  createdAt: DateTime!
+  email: String!
+  id: Int!
+  login: String!
+  password: String!
+  updatedAt: DateTime!
+  user: User!
+  userId: Int!
+}
+
+type ProfileResponse {
+  user: User!
+}
+
+type Query {
+  postById(id: Int!): Post!
+  posts(query: QueryInput!): [Post!]!
+  products(query: QueryProductInput!): [Product!]!
+  profile: ProfileResponse!
+  reviewById(id: Int!): Review!
+  reviews(query: QueryInput!): [Review!]!
+  tagById(id: Int!): Tag!
+  tags(query: QueryInput!): [Tag!]!
+  users: [User!]!
+}
+
+input QueryInput {
+  page: String
+  perPage: String
+  searchTerm: String
+  sort: Sort!
+  status: String!
+}
+
+input QueryProductInput {
+  page: String
+  perPage: String
+  searchTerm: String
+  sort: Sort!
+  status: String!
+}
+
+type Review {
+  author: String!
+  content: String!
+  createdAt: DateTime!
+  id: Int!
+  photo: String!
+  status: Status!
+  updatedAt: DateTime!
+}
+
+input ReviewInput {
+  author: String!
+  content: String!
+  photo: String!
+}
+
+type Rubric {
+  createdAt: DateTime!
+  id: Int!
+  name: String!
+  posts: [Post!]!
+  slug: String!
+  status: Status!
+  updatedAt: DateTime!
+}
+
+type Size {
+  createdAt: DateTime!
+  id: Int!
+  oldPrice: Float
+  price: Float!
+  product: Product!
+  productId: Int!
+  size: String!
+  updatedAt: DateTime!
+}
+
+enum Sort {
+  NEWEST
+  OLDEST
+}
+
+enum Status {
+  HIDDEN
+  PUBLISHED
+}
+
+type Tag {
+  createdAt: DateTime!
+  id: Int!
+  imagePath: String!
+  name: String!
+  products: [Product!]!
+  slug: String!
+  status: Status!
+  updatedAt: DateTime!
+}
+
+input TagInput {
+  imagePath: String!
+  name: String!
+}
+
+type Type {
+  createdAt: DateTime!
+  iconPath: String!
+  id: Int!
+  name: String!
+  products: [Product!]!
+  slug: String!
+  status: Status!
+  updatedAt: DateTime!
+}
+
+type User {
+  createdAt: DateTime!
+  id: Int!
+  isVerified: Boolean!
+  orders: [Order!]!
+  profile: Profile!
+  role: UserRole!
+  updatedAt: DateTime!
+}
+
+enum UserRole {
+  ADMIN
+  USER
+}

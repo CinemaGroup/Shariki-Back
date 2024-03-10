@@ -1,0 +1,350 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["referentialActions"]
+  binaryTargets   = ["native", "rhel-openssl-1.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  ADMIN
+  USER
+
+  @@map("user_role")
+}
+
+enum PaymentMethod {
+  YOOKASSA
+
+  @@map("payment_method")
+}
+
+enum OrderStatus {
+  PENDING // Ожидание оплаты
+  IN_PROCESS // Заказ в процессе
+  ON_HOLD // Заказ на удержании
+  COMPLETED // Заказ закончен успешно
+  CANCELED // Заказ отменен
+  REFUNDED // Возврат средств
+
+  @@map("order_status")
+}
+
+enum Status {
+  PUBLISHED
+  HIDDEN
+
+  @@map("status")
+}
+
+model Billing {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  firstName String @map("first_name")
+  city      String
+  address   String
+  phone     String
+
+  profile   Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  profileId Int     @unique @map("profile_id")
+
+  @@map("billing")
+}
+
+model Profile {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  login      String @unique
+  email      String @unique
+  password   String
+  avatarPath String @default("/images/other/auth/no-user.svg") @map("avatar_path")
+
+  billing Billing?
+
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId Int  @unique @map("user_id")
+
+  @@map("address")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  profile Profile?
+  orders  Order[]
+
+  role       UserRole @default(USER)
+  isVerified Boolean  @default(false) @map("is_verified")
+
+  @@map("user")
+}
+
+model Service {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  name String @unique
+  slug String @unique
+
+  status Status @default(HIDDEN)
+
+  @@map("service")
+}
+
+model Collection {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  name  String           @unique
+  items CollectionItem[]
+
+  status Status @default(HIDDEN)
+
+  @@map("collection")
+}
+
+model CollectionItem {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  name      String @unique
+  slug      String @unique
+  imagePath String @map("image_path")
+
+  products Product[]
+
+  collection   Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  collectionId Int        @map("collection_id")
+
+  status Status @default(HIDDEN)
+
+  @@map("collection_item")
+}
+
+model Tag {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  name      String @unique
+  slug      String @unique
+  imagePath String @map("image_path")
+
+  products Product[]
+
+  status Status @default(HIDDEN)
+
+  @@map("tag")
+}
+
+model Category {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  name String @unique
+  slug String @unique
+
+  products Product[]
+
+  categories Category[] @relation("ParentCategories")
+
+  parent   Category? @relation("ParentCategories", fields: [parentId], references: [id])
+  parentId Int?      @map("parent_id")
+
+  status Status @default(HIDDEN)
+
+  @@map("category")
+}
+
+model Type {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  name     String @unique
+  slug     String @unique
+  iconPath String @map("icon_path")
+
+  products Product[]
+
+  status Status @default(HIDDEN)
+
+  @@map("type")
+}
+
+model Size {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId Int     @map("product_id")
+
+  size     String
+  oldPrice Float? @map("old_price")
+  price    Float
+
+  @@map("size")
+}
+
+model Color {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  color    String
+  oldPrice Float? @map("old_price")
+  price    Float
+
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId Int     @map("product_id")
+
+  @@map("color")
+}
+
+model Characteristic {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  name  String
+  value String
+
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId Int     @map("product_id")
+
+  @@map("characteristic")
+}
+
+model Product {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  name        String   @unique
+  slug        String   @unique
+  sku         String   @unique
+  iconPath    String?  @map("icon_path")
+  description String
+  images      String[]
+
+  packageQuantity Int    @map("package_quantity")
+  price           Float
+  oldPrice        Float? @map("old_price")
+
+  sizes           Size[]
+  colors          Color[]
+  characteristics Characteristic[]
+
+  views       Int @default(0)
+  boughtTimes Int @default(0) @map("bought_times")
+
+  type        Type             @relation(fields: [typeId], references: [id])
+  categories  Category[]
+  tags        Tag[]
+  collections CollectionItem[]
+
+  orderItems OrderItem[]
+
+  status Status @default(HIDDEN)
+
+  typeId Int @map("type_id")
+
+  @@map("product")
+}
+
+model Rubric {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  name String @unique
+  slug String @unique
+
+  posts Post[]
+
+  status Status @default(HIDDEN)
+
+  @@map("rubric")
+}
+
+model Post {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  name        String @unique
+  slug        String @unique
+  excerpt     String
+  description String
+  poster      String
+  bigPoster   String @map("big_poster")
+
+  rubrics Rubric[]
+
+  status Status @default(HIDDEN)
+
+  @@map("post")
+}
+
+model Review {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  author  String
+  photo   String
+  content String
+
+  status Status @default(HIDDEN)
+
+  @@map("review")
+}
+
+model Order {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  method PaymentMethod
+  status OrderStatus   @default(PENDING)
+  total  Int
+
+  items OrderItem[]
+
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId Int  @map("user_id")
+
+  @@map("order")
+}
+
+model OrderItem {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  quantity Int
+  oldPrice Float?  @map("old_price")
+  price    Float
+  product  Product @relation(fields: [productId], references: [id])
+
+  productId Int @map("product_id")
+
+  order   Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId Int   @map("order_id")
+
+  @@map("order_item")
+}

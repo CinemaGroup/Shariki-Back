@@ -40,6 +40,16 @@ enum Status {
   @@map("status")
 }
 
+enum CharacteristicType {
+  HUE
+  MANUFACTURER
+  MATERIAL
+  COUNTRY
+  COLLECTION
+
+  @@map("characteristics_type")
+}
+
 model Billing {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now()) @map("created_at")
@@ -101,20 +111,7 @@ model Service {
   @@map("service")
 }
 
-model Collection {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-
-  name  String           @unique
-  items CollectionItem[]
-
-  status Status @default(HIDDEN)
-
-  @@map("collection")
-}
-
-model CollectionItem {
+model Holiday {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -125,12 +122,9 @@ model CollectionItem {
 
   products Product[]
 
-  collection   Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
-  collectionId Int        @map("collection_id")
-
   status Status @default(HIDDEN)
 
-  @@map("collection_item")
+  @@map("holiday")
 }
 
 model Tag {
@@ -174,9 +168,10 @@ model Type {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  name     String @unique
-  slug     String @unique
-  iconPath String @map("icon_path")
+  name String @unique
+  slug String @unique
+
+  iconPath String @unique @map("icon_path")
 
   products Product[]
 
@@ -190,12 +185,12 @@ model Size {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
+  size     String
+  price    String
+  oldPrice String? @map("old_price")
+
   product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
   productId Int     @map("product_id")
-
-  size     String
-  oldPrice Float? @map("old_price")
-  price    Float
 
   @@map("size")
 }
@@ -206,8 +201,9 @@ model Color {
   updatedAt DateTime @updatedAt @map("updated_at")
 
   color    String
-  oldPrice Float? @map("old_price")
-  price    Float
+  price    String
+  oldPrice String?  @map("old_price")
+  images   String[]
 
   product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
   productId Int     @map("product_id")
@@ -220,11 +216,14 @@ model Characteristic {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  name  String
-  value String
+  name String             @unique
+  slug String             @unique
+  type CharacteristicType @default(COLLECTION)
 
-  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
-  productId Int     @map("product_id")
+  product   Product? @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId Int?     @map("product_id")
+
+  status Status @default(HIDDEN)
 
   @@map("characteristic")
 }
@@ -234,16 +233,15 @@ model Product {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  name        String   @unique
-  slug        String   @unique
-  sku         String   @unique
-  iconPath    String?  @map("icon_path")
+  name        String  @unique
+  slug        String  @unique
+  sku         String  @unique
+  iconPath    String? @map("icon_path")
   description String
-  images      String[]
 
-  packageQuantity Int    @map("package_quantity")
-  price           Float
-  oldPrice        Float? @map("old_price")
+  packageQuantity Int     @default(100) @map("package_quantity")
+  price           String  @default("100.00")
+  oldPrice        String? @map("old_price")
 
   sizes           Size[]
   colors          Color[]
@@ -252,16 +250,16 @@ model Product {
   views       Int @default(0)
   boughtTimes Int @default(0) @map("bought_times")
 
-  type        Type             @relation(fields: [typeId], references: [id])
-  categories  Category[]
-  tags        Tag[]
-  collections CollectionItem[]
+  types      Type[]
+  categories Category[]
+  tags       Tag[]
+  holidays   Holiday[]
 
   orderItems OrderItem[]
 
   status Status @default(HIDDEN)
 
-  typeId Int @map("type_id")
+  typeId Int? @map("type_id")
 
   @@map("product")
 }

@@ -1,7 +1,8 @@
 import { Field, Int, ObjectType } from '@nestjs/graphql'
+import { GraphQLDeweyDecimal } from 'graphql-scalars'
 import { Status } from 'src/global/enums/query.enum'
 import { Category } from 'src/resources/category/entities/category.entity'
-import { CollectionItem } from 'src/resources/collection/item/entities/collection-item.entity'
+import { Holiday } from 'src/resources/holiday/entities/holiday.entity'
 import { OrderItem } from 'src/resources/order/item/entities/order-item.entity'
 import { Tag } from 'src/resources/tag/entities/tag.entity'
 import { Type } from 'src/resources/type/entities/type.entity'
@@ -35,11 +36,11 @@ export class Product {
 	@Field(() => Int)
 	packageQuantity: number
 
-	@Field(() => String)
-	price: string
+	@Field(() => GraphQLDeweyDecimal)
+	price: number
 
-	@Field(() => String, { nullable: true })
-	oldPrice?: string
+	@Field(() => GraphQLDeweyDecimal, { nullable: true })
+	oldPrice?: number
 
 	@Field(() => [Size])
 	sizes: Size[]
@@ -56,8 +57,8 @@ export class Product {
 	@Field(() => Int)
 	boughtTimes: number
 
-	@Field(() => Type)
-	type: Type
+	@Field(() => [Type])
+	types: Type[]
 
 	@Field(() => [Category])
 	categories: Category[]
@@ -65,8 +66,8 @@ export class Product {
 	@Field(() => [Tag])
 	tags: Tag[]
 
-	@Field(() => [CollectionItem])
-	collections: CollectionItem[]
+	@Field(() => [Holiday])
+	holidays: Holiday[]
 
 	@Field(() => [OrderItem])
 	orderItems: OrderItem[]

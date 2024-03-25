@@ -9,11 +9,11 @@ export class Size {
 	@Field(() => String)
 	size: string
 
-	@Field(() => Float)
-	price: Float32Array
+	@Field(() => String)
+	price: string
 
-	@Field(() => Float, { nullable: true })
-	oldPrice?: Float32Array
+	@Field(() => String, { nullable: true })
+	oldPrice?: string
 
 	@Field(() => Product)
 	product: Product

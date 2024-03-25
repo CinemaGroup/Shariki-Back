@@ -1,3 +1,4 @@
-export enum EnumTokens {
-	REFRESH_TOKEN = 'SHARIKI_XLSF',
+export enum EnumCookies {
+	REFRESH_TOKEN = 'SHARIKI-XLSF',
+	ACCESS_TOKEN = 'SHARIKI-ACCESS',
 }

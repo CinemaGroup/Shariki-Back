@@ -1,5 +1,6 @@
 import { Field, Int, ObjectType } from '@nestjs/graphql'
 import { Product } from '../../entities/product.entity'
+import { CharacteristicType } from '../enum/characteristic.enum'
 
 @ObjectType()
 export class Characteristic {
@@ -10,7 +11,10 @@ export class Characteristic {
 	name: string
 
 	@Field(() => String)
-	value: string
+	slug: string
+
+	@Field(() => CharacteristicType)
+	type: CharacteristicType
 
 	@Field(() => Product)
 	product: Product

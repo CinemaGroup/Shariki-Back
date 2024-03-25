@@ -10,6 +10,6 @@ export class QueryInput extends PaginationInput {
 	@Field(() => Sort)
 	readonly sort: Sort
 
-	@Field(() => String)
-	readonly status: Status
+	@Field(() => Status, { nullable: true })
+	readonly status?: Status
 }

@@ -2,12 +2,12 @@ import { Field, InputType } from '@nestjs/graphql'
 
 @InputType()
 export class AuthRegisterInput {
-	@Field()
+	@Field(() => String)
 	readonly login: string
 
-	@Field()
+	@Field(() => String)
 	readonly email: string
 
-	@Field()
+	@Field(() => String)
 	readonly password: string
 }

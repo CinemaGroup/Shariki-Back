@@ -3,7 +3,7 @@
 # ------------------------------------------------------
 
 input AuthLoginInput {
-  loginOrEmail: String!
+  email: String!
   password: String!
 }
 
@@ -14,7 +14,6 @@ input AuthRegisterInput {
 }
 
 type AuthResponse {
-  accessToken: String!
   user: User!
 }
 
@@ -43,28 +42,103 @@ type Category {
   updatedAt: DateTime!
 }
 
+input CategoryInput {
+  name: String!
+  parent: SelectInput
+}
+
 type Characteristic {
   createdAt: DateTime!
   id: Int!
   name: String!
   product: Product!
   productId: Int!
+  slug: String!
+  type: CharacteristicType!
   updatedAt: DateTime!
-  value: String!
 }
 
-type Collection {
+input CharacteristicInput {
+  name: String!
+  type: CharacteristicSelectInput!
+}
+
+input CharacteristicSelectInput {
+  name: String!
+  value: CharacteristicType!
+}
+
+enum CharacteristicType {
+  COLLECTION
+  COUNTRY
+  HUE
+  MANUFACTURER
+  MATERIAL
+}
+
+type Color {
+  color: String!
   createdAt: DateTime!
   id: Int!
-  items: [CollectionItem!]!
-  name: String!
-  status: Status!
+  images: [String!]!
+  oldPrice: String
+  price: String!
+  product: Product!
+  productId: Int!
   updatedAt: DateTime!
 }
 
-type CollectionItem {
-  collection: Collection!
-  collectionId: Int!
+input ColorInput {
+  color: String!
+  images: [String!]!
+  oldPrice: String
+  price: String!
+}
+
+input CreateFolderInput {
+  folderPath: String!
+  name: String!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+"""
+A field whose value conforms to the standard DeweyDecimal format as specified by the OCLC https://www.oclc.org/content/dam/oclc/dewey/resources/summaries/deweysummaries.pdf
+"""
+scalar DeweyDecimal @specifiedBy(url: "https://www.oclc.org/content/dam/oclc/dewey/resources/summaries/deweysummaries.pdf")
+
+input EditFileOrFolderNameInput {
+  newPath: String!
+  oldPath: String!
+}
+
+type File {
+  createdAt: DateTime!
+  extension: String!
+  name: String!
+  path: String!
+  size: String!
+}
+
+type Folder {
+  count: Int!
+  createdAt: DateTime!
+  name: String!
+  path: String!
+  size: String!
+}
+
+type FolderWithChild {
+  childrens: [FolderWithChild!]!
+  createdAt: DateTime!
+  name: String!
+  path: String!
+}
+
+type Holiday {
   createdAt: DateTime!
   id: Int!
   imagePath: String!
@@ -75,39 +149,51 @@ type CollectionItem {
   updatedAt: DateTime!
 }
 
-type Color {
-  color: String!
-  createdAt: DateTime!
-  id: Int!
-  oldPrice: Float
-  price: Float!
-  product: Product!
-  productId: Int!
-  updatedAt: DateTime!
+input HolidayInput {
+  imagePath: String!
+  name: String!
 }
 
-"""
-A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
-"""
-scalar DateTime
-
 type Mutation {
+  createCategory: Category!
+  createCharacteristic: Characteristic!
+  createFolder(data: CreateFolderInput!): String!
+  createHoliday: Holiday!
   createPost: Post!
+  createProduct: Product!
   createReview: Review!
   createTag: Tag!
+  createType: Type!
+  deleteCategory(id: Int!): Category!
+  deleteCharacteristic(id: Int!): Characteristic!
+  deleteFileOrFolder(path: String!): String!
+  deleteHoliday(id: Int!): Holiday!
   deletePost(id: Int!): Post!
+  deleteProduct(id: Int!): Product!
   deleteReview(id: Int!): Review!
   deleteTag(id: Int!): Tag!
+  deleteType(id: Int!): Type!
+  editFileOrFolderName(data: EditFileOrFolderNameInput!): String!
   login(data: AuthLoginInput!): AuthResponse!
   logout: Boolean!
-  newTokens: AuthResponse!
   register(data: AuthRegisterInput!): AuthResponse!
+  toggleCategory(id: Int!): Category!
+  toggleCharacteristic(id: Int!): Characteristic!
+  toggleHoliday(id: Int!): Holiday!
   togglePost(id: Int!): Post!
+  toggleProduct(id: Int!): Product!
   toggleReview(id: Int!): Review!
   toggleTag(id: Int!): Tag!
+  toggleType(id: Int!): Type!
+  updateCategory(data: CategoryInput!, id: Int!): Category!
+  updateCharacteristic(data: CharacteristicInput!, id: Int!): Characteristic!
+  updateHoliday(data: HolidayInput!, id: Int!): Holiday!
   updatePost(data: PostInput!, id: Int!): Post!
+  updateProduct(data: ProductInput!, id: Int!): Product!
   updateReview(data: ReviewInput!, id: Int!): Review!
   updateTag(data: TagInput!, id: Int!): Tag!
+  updateType(data: TypeInput!, id: Int!): Type!
+  uploadFiles(data: UploadFilesInput!): String!
 }
 
 type Order {
@@ -175,27 +261,44 @@ type Product {
   boughtTimes: Int!
   categories: [Category!]!
   characteristics: [Characteristic!]!
-  collections: [CollectionItem!]!
   colors: [Color!]!
   createdAt: DateTime!
   description: String!
+  holidays: [Holiday!]!
   iconPath: String
   id: Int!
   images: [String!]!
   name: String!
-  oldPrice: String
+  oldPrice: DeweyDecimal
   orderItems: [OrderItem!]!
   packageQuantity: Int!
-  price: String!
+  price: DeweyDecimal!
   sizes: [Size!]!
   sku: String!
   slug: String!
   status: Status!
   tags: [Tag!]!
-  type: Type!
   typeId: Int!
+  types: [Type!]!
   updatedAt: DateTime!
   views: Int!
+}
+
+input ProductInput {
+  categories: [SelectInput!]!
+  characteristics: [SelectInput!]!
+  colors: [ColorInput!]!
+  description: String!
+  holidays: [SelectInput!]!
+  iconPath: String
+  name: String!
+  oldPrice: String
+  packageQuantity: String!
+  price: String!
+  sizes: [SizeInput!]!
+  sku: String!
+  tags: [SelectInput!]!
+  types: [SelectInput!]!
 }
 
 type Profile {
@@ -216,14 +319,25 @@ type ProfileResponse {
 }
 
 type Query {
+  categories(query: QueryInput!): [Category!]!
+  categoryById(id: Int!): Category!
+  characteristicById(id: Int!): Characteristic!
+  characteristics(query: QueryInput!): [Characteristic!]!
+  folderItems(folderPath: String!): StorageItem!
+  folders: [FolderWithChild!]!
+  holidayById(id: Int!): Holiday!
+  holidays(query: QueryInput!): [Holiday!]!
   postById(id: Int!): Post!
   posts(query: QueryInput!): [Post!]!
-  products(query: QueryProductInput!): [Product!]!
+  productById(id: Int!): Product!
+  products(isSale: Boolean, query: QueryProductInput!): [Product!]!
   profile: ProfileResponse!
   reviewById(id: Int!): Review!
   reviews(query: QueryInput!): [Review!]!
   tagById(id: Int!): Tag!
   tags(query: QueryInput!): [Tag!]!
+  typeById(id: Int!): Type!
+  types(query: QueryInput!): [Type!]!
   users: [User!]!
 }
 
@@ -232,7 +346,7 @@ input QueryInput {
   perPage: String
   searchTerm: String
   sort: Sort!
-  status: String!
+  status: Status
 }
 
 input QueryProductInput {
@@ -240,7 +354,7 @@ input QueryProductInput {
   perPage: String
   searchTerm: String
   sort: Sort!
-  status: String!
+  status: Status
 }
 
 type Review {
@@ -269,15 +383,26 @@ type Rubric {
   updatedAt: DateTime!
 }
 
+input SelectInput {
+  name: String!
+  value: Int!
+}
+
 type Size {
   createdAt: DateTime!
   id: Int!
-  oldPrice: Float
-  price: Float!
+  oldPrice: String
+  price: String!
   product: Product!
   productId: Int!
   size: String!
   updatedAt: DateTime!
+}
+
+input SizeInput {
+  oldPrice: String
+  price: String!
+  size: String!
 }
 
 enum Sort {
@@ -288,6 +413,11 @@ enum Sort {
 enum Status {
   HIDDEN
   PUBLISHED
+}
+
+type StorageItem {
+  files: [File!]!
+  folders: [Folder!]!
 }
 
 type Tag {
@@ -315,6 +445,19 @@ type Type {
   slug: String!
   status: Status!
   updatedAt: DateTime!
+}
+
+input TypeInput {
+  iconPath: String!
+  name: String!
+}
+
+"""The `Upload` scalar type represents a file upload."""
+scalar Upload
+
+input UploadFilesInput {
+  data: [Upload!]!
+  folderPath: String!
 }
 
 type User {

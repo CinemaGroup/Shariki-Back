@@ -6,9 +6,9 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-		"build": "prisma generate && prisma db push && nest build",
+    "build": "prisma generate && prisma db push && nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-		"start": "node dist/main",
+    "start": "node dist/main",
     "dev": "nest start --watch",
     "debug": "nest start --debug --watch",
     "prod": "node dist/main",
@@ -36,11 +36,13 @@
     "cookie-parser": "^1.4.6",
     "fs-extra": "^11.2.0",
     "graphql": "^16.8.1",
+    "graphql-scalars": "^1.23.0",
     "graphql-upload-ts": "^2.1.0",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
     "reflect-metadata": "^0.1.13",
-    "rxjs": "^7.8.1"
+    "rxjs": "^7.8.1",
+    "type-graphql": "^1.1.1"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.0.0",

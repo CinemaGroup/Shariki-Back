@@ -7,7 +7,11 @@ import { ConfigService } from '@nestjs/config'
 import { JwtService } from '@nestjs/jwt'
 import { hash, verify } from 'argon2'
 import { Response } from 'express'
-import { EnumTokens } from 'src/global/enums/global.enum'
+import {
+	EXPIRE_DAY_REFRESH_TOKEN,
+	EXPIRE_MINUTE_ACCESS_TOKEN,
+} from 'src/global/constants/tokens.constants'
+import { EnumCookies } from 'src/global/enums/global.enum'
 import { PrismaService } from 'src/prisma/prisma.service'
 import { isProd } from 'src/utils/is-prod.util'
 import { userInclude } from '../user/includes/user.include'
@@ -22,8 +26,18 @@ export class AuthService {
 		private configService: ConfigService
 	) {}
 
-	private EXPIRE_DAY_REFRESH_TOKEN = 1
-	private EXPIRE_HOUR_ACCESS_TOKEN = 1
+	async logout(res: Response) {
+		try {
+			await this.removeRefreshTokenFromCookies(res)
+			await this.removeAccessTokenFromCookies(res)
+
+			return true
+		} catch (err) {
+			console.log(err)
+
+			return false
+		}
+	}
 
 	async register(input: AuthRegisterInput) {
 		const oldUser = await this.prisma.user.findFirst({
@@ -56,6 +70,7 @@ export class AuthService {
 					},
 				},
 			},
+			include: userInclude,
 		})
 
 		const tokens = await this.issueTokens(newUser.id)
@@ -77,14 +92,18 @@ export class AuthService {
 		}
 	}
 
-	async getNewTokens(refreshToken: string) {
+	async getNewTokens(refreshToken: string, res: Response) {
 		const result = await this.jwtService.verifyAsync(refreshToken)
-		if (!result) throw new UnauthorizedException('Неверный токен')
+		if (!result) {
+			this.logout(res)
+			throw new UnauthorizedException('Logout')
+		}
 
 		const user = await this.prisma.user.findUnique({
 			where: {
 				id: result.id,
 			},
+			include: userInclude,
 		})
 
 		const tokens = await this.issueTokens(user.id)
@@ -98,18 +117,9 @@ export class AuthService {
 	async validateUser(input: AuthLoginInput) {
 		const user = await this.prisma.user.findFirst({
 			where: {
-				OR: [
-					{
-						profile: {
-							login: input.loginOrEmail,
-						},
-					},
-					{
-						profile: {
-							email: input.loginOrEmail,
-						},
-					},
-				],
+				profile: {
+					email: input.email,
+				},
 			},
 			include: userInclude,
 		})
@@ -125,21 +135,21 @@ export class AuthService {
 		const data = { id: userId }
 
 		const refreshToken = await this.jwtService.signAsync(data, {
-			expiresIn: `${this.EXPIRE_DAY_REFRESH_TOKEN}d`,
+			expiresIn: `${EXPIRE_DAY_REFRESH_TOKEN}d`,
 		})
 
 		const accessToken = await this.jwtService.signAsync(data, {
-			expiresIn: `${this.EXPIRE_HOUR_ACCESS_TOKEN}h`,
+			expiresIn: `${EXPIRE_MINUTE_ACCESS_TOKEN}m`,
 		})
 
 		return { accessToken, refreshToken }
 	}
 
-	async addRefreshTokenToResponse(res: Response, refreshToken: string) {
+	async addRefreshTokenToCookies(res: Response, refreshToken: string) {
 		const expiresIn = new Date()
-		expiresIn.setDate(expiresIn.getDate() + this.EXPIRE_DAY_REFRESH_TOKEN)
+		expiresIn.setDate(expiresIn.getDate() + EXPIRE_DAY_REFRESH_TOKEN)
 
-		res.cookie(EnumTokens.REFRESH_TOKEN, refreshToken, {
+		res.cookie(EnumCookies.REFRESH_TOKEN, refreshToken, {
 			httpOnly: true,
 			domain: process.env.DOMAIN,
 			expires: expiresIn,
@@ -148,7 +158,26 @@ export class AuthService {
 		})
 	}
 
-	async removeRefreshTokenFromResponse(res: Response) {
-		res.clearCookie(EnumTokens.REFRESH_TOKEN)
+	async removeRefreshTokenFromCookies(res: Response) {
+		res.clearCookie(EnumCookies.REFRESH_TOKEN)
+	}
+
+	async addAccessTokenToCookies(res: Response, accessToken: string) {
+		const expiresIn = new Date()
+		expiresIn.setTime(
+			expiresIn.getTime() + EXPIRE_MINUTE_ACCESS_TOKEN * 60 * 1000
+		)
+
+		res.cookie(EnumCookies.ACCESS_TOKEN, accessToken, {
+			httpOnly: true,
+			domain: process.env.DOMAIN,
+			expires: expiresIn,
+			secure: isProd(this.configService),
+			sameSite: 'none',
+		})
+	}
+
+	async removeAccessTokenFromCookies(res: Response) {
+		res.clearCookie(EnumCookies.ACCESS_TOKEN)
 	}
 }

@@ -32,6 +32,12 @@ export class ProductResolver {
 	}
 
 	@Auth(UserRole.ADMIN)
+	@Mutation(() => Product, { name: 'duplicateProduct' })
+	async duplicate(@Args('id', { type: () => Int }) id: number) {
+		return this.productService.duplicate(id)
+	}
+
+	@Auth(UserRole.ADMIN)
 	@Mutation(() => Product, { name: 'createProduct' })
 	async create() {
 		return this.productService.create()

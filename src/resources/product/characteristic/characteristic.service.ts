@@ -97,6 +97,20 @@ export class CharacteristicService {
 		})
 	}
 
+	async duplicate(id: number) {
+		const characteristic = await this.byId(id)
+		const name = await this.generateUniqueSlug(characteristic.name)
+
+		return this.prisma.characteristic.create({
+			data: {
+				name,
+				slug: generateSlug(name),
+				type: characteristic.type,
+				status: Status.PUBLISHED,
+			},
+		})
+	}
+
 	async create() {
 		const isExists = await this.prisma.characteristic.findUnique({
 			where: {
@@ -152,5 +166,20 @@ export class CharacteristicService {
 				id,
 			},
 		})
+	}
+
+	private generateUniqueSlug = async (queriedName: string, number = 1) => {
+		const name = `${queriedName}-${number}`
+		const isExist = await this.prisma.category.findUnique({
+			where: {
+				slug: generateSlug(name),
+			},
+		})
+
+		if (!isExist) {
+			return name
+		} else {
+			return this.generateUniqueSlug(queriedName, number + 1)
+		}
 	}
 }

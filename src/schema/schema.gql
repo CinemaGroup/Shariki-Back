@@ -81,8 +81,6 @@ type Color {
   createdAt: DateTime!
   id: Int!
   images: [String!]!
-  oldPrice: String
-  price: String!
   product: Product!
   productId: Int!
   updatedAt: DateTime!
@@ -91,8 +89,6 @@ type Color {
 input ColorInput {
   color: String!
   images: [String!]!
-  oldPrice: String
-  price: String!
 }
 
 input CreateFolderInput {
@@ -173,6 +169,12 @@ type Mutation {
   deleteReview(id: Int!): Review!
   deleteTag(id: Int!): Tag!
   deleteType(id: Int!): Type!
+  duplicateCategory(id: Int!): Category!
+  duplicateCharacteristic(id: Int!): Characteristic!
+  duplicateHoliday(id: Int!): Holiday!
+  duplicateProduct(id: Int!): Product!
+  duplicateTag(id: Int!): Tag!
+  duplicateType(id: Int!): Type!
   editFileOrFolderName(data: EditFileOrFolderNameInput!): String!
   login(data: AuthLoginInput!): AuthResponse!
   logout: Boolean!
@@ -391,8 +393,8 @@ input SelectInput {
 type Size {
   createdAt: DateTime!
   id: Int!
-  oldPrice: String
-  price: String!
+  oldPrice: DeweyDecimal
+  price: DeweyDecimal!
   product: Product!
   productId: Int!
   size: String!

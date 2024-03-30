@@ -29,6 +29,12 @@ export class TypeResolver {
 	}
 
 	@Auth(UserRole.ADMIN)
+	@Mutation(() => Type, { name: 'duplicateType' })
+	async duplicate(@Args('id', { type: () => Int }) id: number) {
+		return this.typeService.duplicate(id)
+	}
+
+	@Auth(UserRole.ADMIN)
 	@Mutation(() => Type, { name: 'createType' })
 	async create() {
 		return this.typeService.create()

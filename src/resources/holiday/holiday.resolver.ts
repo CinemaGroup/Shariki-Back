@@ -30,6 +30,12 @@ export class HolidayResolver {
 	}
 
 	@Auth(UserRole.ADMIN)
+	@Mutation(() => Holiday, { name: 'duplicateHoliday' })
+	async duplicate(@Args('id', { type: () => Int }) id: number) {
+		return this.holidayService.duplicate(id)
+	}
+
+	@Auth(UserRole.ADMIN)
 	@Mutation(() => Holiday, { name: 'createHoliday' })
 	async create() {
 		return this.holidayService.create()

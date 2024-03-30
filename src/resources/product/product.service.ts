@@ -104,6 +104,53 @@ export class ProductService {
 		})
 	}
 
+	async duplicate(id: number) {
+		const product = await this.byId(id)
+		const name = await this.generateUniqueSlug(product.name)
+
+		return this.prisma.product.create({
+			data: {
+				name,
+				slug: generateSlug(name),
+				sku: product.sku,
+				iconPath: product.iconPath,
+				description: product.description,
+				packageQuantity: +product.packageQuantity,
+				price: product.price,
+				oldPrice: product.oldPrice,
+				sizes: {
+					create: product.sizes.map((item) => ({
+						size: item.size,
+						price: item.price,
+						oldPrice: item.oldPrice,
+					})),
+				},
+				colors: {
+					create: product.colors.map((item) => ({
+						color: item.color,
+						images: item.images,
+					})),
+				},
+				characteristics: {
+					connect: product.characteristics.map((item) => ({ id: item.id })),
+				},
+				types: {
+					connect: product.types.map((item) => ({ id: item.id })),
+				},
+				categories: {
+					connect: product.categories.map((item) => ({ id: item.id })),
+				},
+				tags: {
+					connect: product.tags.map((item) => ({ id: item.id })),
+				},
+				holidays: {
+					connect: product.holidays.map((item) => ({ id: item.id })),
+				},
+				status: Status.PUBLISHED,
+			},
+		})
+	}
+
 	async create() {
 		const isExists = await this.prisma.product.findUnique({
 			where: {
@@ -165,9 +212,7 @@ export class ProductService {
 					deleteMany: {},
 					create: input.colors.map((item) => ({
 						color: item.color,
-						price: item.price,
 						images: item.images,
-						oldPrice: item.oldPrice,
 					})),
 				},
 				characteristics: {
@@ -196,5 +241,20 @@ export class ProductService {
 				id,
 			},
 		})
+	}
+
+	private generateUniqueSlug = async (queriedName: string, number = 1) => {
+		const name = `${queriedName}-${number}`
+		const isExist = await this.prisma.category.findUnique({
+			where: {
+				slug: generateSlug(name),
+			},
+		})
+
+		if (!isExist) {
+			return name
+		} else {
+			return this.generateUniqueSlug(queriedName, number + 1)
+		}
 	}
 }

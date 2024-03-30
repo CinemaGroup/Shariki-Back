@@ -27,6 +27,12 @@ export class CategoryResolver {
 	async togglePublished(@Args('id', { type: () => Int }) id: number) {
 		return this.categoryService.togglePublished(id)
 	}
+	
+	@Auth(UserRole.ADMIN)
+	@Mutation(() => Category, { name: 'duplicateCategory' })
+	async duplicate(@Args('id', { type: () => Int }) id: number) {
+		return this.categoryService.duplicate(id)
+	}
 
 	@Auth(UserRole.ADMIN)
 	@Mutation(() => Category, { name: 'createCategory' })

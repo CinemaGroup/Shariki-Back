@@ -93,6 +93,20 @@ export class TagService {
 		})
 	}
 
+	async duplicate(id: number) {
+		const tag = await this.byId(id)
+		const name = await this.generateUniqueSlug(tag.name)
+
+		return this.prisma.tag.create({
+			data: {
+				name,
+				slug: generateSlug(name),
+				imagePath: tag.imagePath,
+				status: Status.PUBLISHED,
+			},
+		})
+	}
+
 	async create() {
 		const isExists = await this.prisma.tag.findUnique({
 			where: {
@@ -147,5 +161,20 @@ export class TagService {
 				id,
 			},
 		})
+	}
+
+	private generateUniqueSlug = async (queriedName: string, number = 1) => {
+		const name = `${queriedName}-${number}`
+		const isExist = await this.prisma.category.findUnique({
+			where: {
+				slug: generateSlug(name),
+			},
+		})
+
+		if (!isExist) {
+			return name
+		} else {
+			return this.generateUniqueSlug(queriedName, number + 1)
+		}
 	}
 }

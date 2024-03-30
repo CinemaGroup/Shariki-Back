@@ -93,6 +93,20 @@ export class TypeService {
 		})
 	}
 
+	async duplicate(id: number) {
+		const type = await this.byId(id)
+		const name = await this.generateUniqueSlug(type.name)
+
+		return this.prisma.type.create({
+			data: {
+				name,
+				slug: generateSlug(name),
+				iconPath: type.iconPath,
+				status: Status.PUBLISHED,
+			},
+		})
+	}
+
 	async create() {
 		const isExists = await this.prisma.type.findUnique({
 			where: {
@@ -147,5 +161,20 @@ export class TypeService {
 				id,
 			},
 		})
+	}
+
+	private generateUniqueSlug = async (queriedName: string, number = 1) => {
+		const name = `${queriedName}-${number}`
+		const isExist = await this.prisma.category.findUnique({
+			where: {
+				slug: generateSlug(name),
+			},
+		})
+
+		if (!isExist) {
+			return name
+		} else {
+			return this.generateUniqueSlug(queriedName, number + 1)
+		}
 	}
 }

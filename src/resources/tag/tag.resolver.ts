@@ -30,6 +30,12 @@ export class TagResolver {
 	}
 
 	@Auth(UserRole.ADMIN)
+	@Mutation(() => Tag, { name: 'duplicateTag' })
+	async duplicate(@Args('id', { type: () => Int }) id: number) {
+		return this.tagService.duplicate(id)
+	}
+
+	@Auth(UserRole.ADMIN)
 	@Mutation(() => Tag, { name: 'createTag' })
 	async create() {
 		return this.tagService.create()

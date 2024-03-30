@@ -29,6 +29,12 @@ export class CharacteristicResolver {
 	}
 
 	@Auth(UserRole.ADMIN)
+	@Mutation(() => Characteristic, { name: 'duplicateCharacteristic' })
+	async duplicate(@Args('id', { type: () => Int }) id: number) {
+		return this.characteristicService.duplicate(id)
+	}
+
+	@Auth(UserRole.ADMIN)
 	@Mutation(() => Characteristic, { name: 'createCharacteristic' })
 	async create() {
 		return this.characteristicService.create()

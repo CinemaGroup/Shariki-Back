@@ -1,5 +1,6 @@
-import { Field, Float, Int, ObjectType } from '@nestjs/graphql'
+import { Field, Int, ObjectType } from '@nestjs/graphql'
 import { Product } from '../../entities/product.entity'
+import { GraphQLDeweyDecimal } from 'graphql-scalars'
 
 @ObjectType()
 export class Size {
@@ -9,11 +10,11 @@ export class Size {
 	@Field(() => String)
 	size: string
 
-	@Field(() => String)
-	price: string
+	@Field(() => GraphQLDeweyDecimal)
+	price: number
 
-	@Field(() => String, { nullable: true })
-	oldPrice?: string
+	@Field(() => GraphQLDeweyDecimal, { nullable: true })
+	oldPrice?: number
 
 	@Field(() => Product)
 	product: Product

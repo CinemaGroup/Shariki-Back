@@ -97,6 +97,20 @@ export class HolidayService {
 		})
 	}
 
+	async duplicate(id: number) {
+		const holiday = await this.byId(id)
+		const name = await this.generateUniqueSlug(holiday.name)
+
+		return this.prisma.holiday.create({
+			data: {
+				name,
+				slug: generateSlug(name),
+				imagePath: holiday.imagePath,
+				status: Status.PUBLISHED,
+			},
+		})
+	}
+
 	async create() {
 		const isExists = await this.prisma.holiday.findUnique({
 			where: {
@@ -151,5 +165,20 @@ export class HolidayService {
 				id,
 			},
 		})
+	}
+
+	private generateUniqueSlug = async (queriedName: string, number = 1) => {
+		const name = `${queriedName}-${number}`
+		const isExist = await this.prisma.category.findUnique({
+			where: {
+				slug: generateSlug(name),
+			},
+		})
+
+		if (!isExist) {
+			return name
+		} else {
+			return this.generateUniqueSlug(queriedName, number + 1)
+		}
 	}
 }

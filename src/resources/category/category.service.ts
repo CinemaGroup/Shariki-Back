@@ -9,8 +9,8 @@ import { QueryInput } from 'src/global/inputs/query.input'
 import { PrismaService } from 'src/prisma/prisma.service'
 import { generateSlug } from 'src/utils/generateSlug'
 import { PaginationService } from '../pagination/pagination.service'
-import { CategoryInput } from './inputs/category.input'
 import { categoryInclude } from './includes/category.include'
+import { CategoryInput } from './inputs/category.input'
 
 @Injectable()
 export class CategoryService {
@@ -75,7 +75,7 @@ export class CategoryService {
 			where: {
 				id,
 			},
-			include: categoryInclude
+			include: categoryInclude,
 		})
 
 		if (!category) throw new NotFoundException('Категория не найдена.')
@@ -95,6 +95,22 @@ export class CategoryService {
 					category.status === Status.PUBLISHED
 						? Status.HIDDEN
 						: Status.PUBLISHED,
+			},
+		})
+	}
+
+	async duplicate(id: number) {
+		const category = await this.byId(id)
+		const name = await this.generateUniqueSlug(category.name)
+
+		return this.prisma.category.create({
+			data: {
+				name: name,
+				slug: generateSlug(name),
+				parent: category.parentId ? {
+					connect: { id: category.parentId },
+				}: undefined,
+				status: Status.PUBLISHED,
 			},
 		})
 	}
@@ -140,9 +156,11 @@ export class CategoryService {
 			data: {
 				name: input.name,
 				slug: generateSlug(input.name),
-				parent: {
-					connect: { id: input.parent.value },
-				},
+				parent: input.parent
+					? {
+							connect: { id: input.parent.value },
+					  }
+					: undefined,
 				status: Status.PUBLISHED,
 			},
 		})
@@ -154,5 +172,20 @@ export class CategoryService {
 				id,
 			},
 		})
+	}
+
+	private generateUniqueSlug = async (queriedName: string, number = 1) => {
+		const name = `${queriedName}-${number}`
+		const isExist = await this.prisma.category.findUnique({
+			where: {
+				slug: generateSlug(name),
+			},
+		})
+
+		if (!isExist) {
+			return name
+		} else {
+			return this.generateUniqueSlug(queriedName, number + 1)
+		}
 	}
 }

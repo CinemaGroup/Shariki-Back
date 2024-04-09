@@ -96,6 +96,11 @@ input CreateFolderInput {
   name: String!
 }
 
+type CurrentProduct {
+  product: Product
+  similarProducts: [Product!]!
+}
+
 """
 A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
 """
@@ -332,6 +337,7 @@ type Query {
   postById(id: Int!): Post!
   posts(query: QueryInput!): [Post!]!
   productById(id: Int!): Product!
+  productBySlug(slug: String!): CurrentProduct!
   products(isSale: Boolean, query: QueryProductInput!): [Product!]!
   profile: ProfileResponse!
   reviewById(id: Int!): Review!

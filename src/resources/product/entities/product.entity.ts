@@ -84,3 +84,12 @@ export class Product {
 	@Field(() => Date)
 	createdAt: Date
 }
+
+@ObjectType()
+export class CurrentProduct {
+	@Field(() => Product, { nullable: true })
+	product: Product
+
+	@Field(() => [Product])
+	similarProducts: Product[]
+}

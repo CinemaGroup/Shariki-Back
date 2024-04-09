@@ -1,7 +1,7 @@
 import { Args, Int, Mutation, Query, Resolver } from '@nestjs/graphql'
 import { Auth } from '../auth/decorators/auth.decorator'
 import { UserRole } from '../user/enums/user-role.enum'
-import { Product } from './entities/product.entity'
+import { CurrentProduct, Product } from './entities/product.entity'
 import { ProductInput } from './inputs/product.input'
 import { QueryProductInput } from './inputs/query-product.input'
 import { ProductService } from './product.service'
@@ -16,6 +16,11 @@ export class ProductResolver {
 		@Args('isSale', { type: () => Boolean, nullable: true }) isSale?: boolean
 	) {
 		return this.productService.getAll(input, isSale)
+	}
+
+	@Query(() => CurrentProduct, { name: 'productBySlug' })
+	async getBySlug(@Args('slug') slug: string) {
+		return this.productService.bySlug(slug)
 	}
 
 	// Admin Place

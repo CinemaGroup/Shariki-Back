@@ -74,6 +74,37 @@ export class ProductService {
 		}
 	}
 
+	async bySlug(slug: string) {
+		const product = await this.prisma.product.findUnique({
+			where: {
+				slug,
+			},
+			include: productInclude,
+		})
+
+		const similarProducts = await this.prisma.product.findMany({
+			where: {
+				AND: [
+					{
+						categories: {
+							some: {
+								slug: {
+									in: product.categories.map((category) => category.slug), // Преобразуем категории в массив строк
+								},
+							},
+						},
+					},
+				],
+			},
+			include: productInclude,
+		})
+
+		return {
+			product: product || null,
+			similarProducts: similarProducts || [],
+		}
+	}
+
 	// Admin Place
 	async byId(id: number) {
 		const product = await this.prisma.product.findUnique({

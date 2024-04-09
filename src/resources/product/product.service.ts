@@ -86,10 +86,15 @@ export class ProductService {
 			where: {
 				AND: [
 					{
+						id: {
+							not: product.id,
+						},
+					},
+					{
 						categories: {
 							some: {
 								slug: {
-									in: product.categories.map((category) => category.slug), // Преобразуем категории в массив строк
+									in: product.categories.map((category) => category.slug),
 								},
 							},
 						},

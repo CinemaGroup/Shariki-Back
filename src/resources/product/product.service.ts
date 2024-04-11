@@ -222,7 +222,7 @@ export class ProductService {
 		})
 
 		if (isExists) throw new BadRequestException('Продукт уже существует.')
-
+			console.log(input)
 		return this.prisma.product.update({
 			where: {
 				id,
@@ -252,18 +252,23 @@ export class ProductService {
 					})),
 				},
 				characteristics: {
+					disconnect: product.characteristics.map((item) => ({ id: item.id })),
 					connect: input.characteristics.map((item) => ({ id: item.value })),
 				},
 				types: {
+					disconnect: product.types.map((item) => ({ id: item.id })),
 					connect: input.types.map((item) => ({ id: item.value })),
 				},
 				categories: {
+					disconnect: product.categories.map((item) => ({ id: item.id })),
 					connect: input.categories.map((item) => ({ id: item.value })),
 				},
 				tags: {
+					disconnect: product.tags.map((item) => ({ id: item.id })),
 					connect: input.tags.map((item) => ({ id: item.value })),
 				},
 				holidays: {
+					disconnect: product.holidays.map((item) => ({ id: item.id })),
 					connect: input.holidays.map((item) => ({ id: item.value })),
 				},
 				status: Status.PUBLISHED,

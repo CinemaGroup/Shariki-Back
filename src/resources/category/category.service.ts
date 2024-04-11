@@ -107,9 +107,11 @@ export class CategoryService {
 			data: {
 				name: name,
 				slug: generateSlug(name),
-				parent: category.parentId ? {
-					connect: { id: category.parentId },
-				}: undefined,
+				parent: category.parentId
+					? {
+							connect: { id: category.parentId },
+					  }
+					: undefined,
 				status: Status.PUBLISHED,
 			},
 		})

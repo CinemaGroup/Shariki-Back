@@ -46,6 +46,7 @@ enum CharacteristicType {
   MATERIAL
   COUNTRY
   COLLECTION
+  COLOR
 
   @@map("characteristics_type")
 }
@@ -250,6 +251,7 @@ model Product {
   sku         String
   iconPath    String?  @map("icon_path")
   description String
+  images      String[]
 
   packageQuantity Int     @default(100) @map("package_quantity")
   price           String  @default("100.00")

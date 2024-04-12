@@ -70,6 +70,7 @@ input CharacteristicSelectInput {
 
 enum CharacteristicType {
   COLLECTION
+  COLOR
   COUNTRY
   HUE
   MANUFACTURER
@@ -317,6 +318,7 @@ input ProductInput {
   description: String!
   holidays: [SelectInput!]!
   iconPath: String
+  images: [String!]!
   name: String!
   oldPrice: String
   packageQuantity: String!

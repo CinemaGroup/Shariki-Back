@@ -236,6 +236,7 @@ export class ProductService {
 				packageQuantity: +input.packageQuantity,
 				price: input.price,
 				oldPrice: input.oldPrice,
+				images: input.images,
 				sizes: {
 					deleteMany: {},
 					create: input.sizes.map((item) => ({

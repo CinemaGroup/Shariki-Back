@@ -1,4 +1,4 @@
-import { Field, InputType, Int } from '@nestjs/graphql'
+import { Field, InputType } from '@nestjs/graphql'
 import { SelectInput } from 'src/global/inputs/select.input'
 import { ColorInput } from '../color/inputs/color.input'
 import { SizeInput } from '../size/inputs/size.input'
@@ -25,6 +25,9 @@ export class ProductInput {
 
 	@Field(() => String, { nullable: true })
 	oldPrice?: string
+
+	@Field(() => [String])
+	images: string[]
 
 	@Field(() => [SizeInput])
 	sizes: SizeInput[]

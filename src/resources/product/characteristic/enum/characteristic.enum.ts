@@ -6,6 +6,7 @@ export enum CharacteristicType {
 	MATERIAL = 'MATERIAL',
 	COUNTRY = 'COUNTRY',
 	COLLECTION = 'COLLECTION',
+	COLOR = 'COLOR',
 }
 
 registerEnumType(CharacteristicType, {

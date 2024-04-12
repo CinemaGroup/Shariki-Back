@@ -3,7 +3,7 @@ import { Status } from 'src/global/enums/query.enum'
 import { Product } from 'src/resources/product/entities/product.entity'
 
 @ObjectType()
-export class Holiday {
+export class Collection {
 	@Field(() => Int)
 	id: number
 
@@ -12,7 +12,7 @@ export class Holiday {
 
 	@Field(() => String)
 	slug: string
-	
+
 	@Field(() => [Product])
 	products: Product[]
 

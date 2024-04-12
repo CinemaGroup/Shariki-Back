@@ -76,6 +76,20 @@ enum CharacteristicType {
   MATERIAL
 }
 
+type Collection {
+  createdAt: DateTime!
+  id: Int!
+  name: String!
+  products: [Product!]!
+  slug: String!
+  status: Status!
+  updatedAt: DateTime!
+}
+
+input CollectionInput {
+  name: String!
+}
+
 type Color {
   color: String!
   createdAt: DateTime!
@@ -142,7 +156,6 @@ type FolderWithChild {
 type Holiday {
   createdAt: DateTime!
   id: Int!
-  imagePath: String!
   name: String!
   products: [Product!]!
   slug: String!
@@ -151,13 +164,13 @@ type Holiday {
 }
 
 input HolidayInput {
-  imagePath: String!
   name: String!
 }
 
 type Mutation {
   createCategory: Category!
   createCharacteristic: Characteristic!
+  createCollection: Collection!
   createFolder(data: CreateFolderInput!): String!
   createHoliday: Holiday!
   createPost: Post!
@@ -167,6 +180,7 @@ type Mutation {
   createType: Type!
   deleteCategory(id: Int!): Category!
   deleteCharacteristic(id: Int!): Characteristic!
+  deleteCollection(id: Int!): Collection!
   deleteFileOrFolder(path: String!): String!
   deleteHoliday(id: Int!): Holiday!
   deletePost(id: Int!): Post!
@@ -176,6 +190,7 @@ type Mutation {
   deleteType(id: Int!): Type!
   duplicateCategory(id: Int!): Category!
   duplicateCharacteristic(id: Int!): Characteristic!
+  duplicateCollection(id: Int!): Collection!
   duplicateHoliday(id: Int!): Holiday!
   duplicateProduct(id: Int!): Product!
   duplicateTag(id: Int!): Tag!
@@ -186,6 +201,7 @@ type Mutation {
   register(data: AuthRegisterInput!): AuthResponse!
   toggleCategory(id: Int!): Category!
   toggleCharacteristic(id: Int!): Characteristic!
+  toggleCollection(id: Int!): Collection!
   toggleHoliday(id: Int!): Holiday!
   togglePost(id: Int!): Post!
   toggleProduct(id: Int!): Product!
@@ -194,6 +210,7 @@ type Mutation {
   toggleType(id: Int!): Type!
   updateCategory(data: CategoryInput!, id: Int!): Category!
   updateCharacteristic(data: CharacteristicInput!, id: Int!): Characteristic!
+  updateCollection(data: CollectionInput!, id: Int!): Collection!
   updateHoliday(data: HolidayInput!, id: Int!): Holiday!
   updatePost(data: PostInput!, id: Int!): Post!
   updateProduct(data: ProductInput!, id: Int!): Product!
@@ -268,6 +285,7 @@ type Product {
   boughtTimes: Int!
   categories: [Category!]!
   characteristics: [Characteristic!]!
+  collections: [Collection!]!
   colors: [Color!]!
   createdAt: DateTime!
   description: String!
@@ -294,6 +312,7 @@ type Product {
 input ProductInput {
   categories: [SelectInput!]!
   characteristics: [SelectInput!]!
+  collections: [SelectInput!]!
   colors: [ColorInput!]!
   description: String!
   holidays: [SelectInput!]!
@@ -330,6 +349,8 @@ type Query {
   categoryById(id: Int!): Category!
   characteristicById(id: Int!): Characteristic!
   characteristics(query: QueryInput!): [Characteristic!]!
+  collectionById(id: Int!): Collection!
+  collections(query: QueryInput!): [Collection!]!
   folderItems(folderPath: String!): StorageItem!
   folders: [FolderWithChild!]!
   holidayById(id: Int!): Holiday!

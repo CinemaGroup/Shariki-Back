@@ -46,4 +46,7 @@ export class ProductInput {
 
 	@Field(() => [SelectInput])
 	holidays: SelectInput[]
+
+	@Field(() => [SelectInput])
+	collections: SelectInput[]
 }

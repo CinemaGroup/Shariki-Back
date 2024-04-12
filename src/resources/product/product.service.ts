@@ -222,7 +222,7 @@ export class ProductService {
 		})
 
 		if (isExists) throw new BadRequestException('Продукт уже существует.')
-			console.log(input)
+
 		return this.prisma.product.update({
 			where: {
 				id,
@@ -270,6 +270,10 @@ export class ProductService {
 				holidays: {
 					disconnect: product.holidays.map((item) => ({ id: item.id })),
 					connect: input.holidays.map((item) => ({ id: item.value })),
+				},
+				collections: {
+					disconnect: product.collections.map((item) => ({ id: item.id })),
+					connect: input.collections.map((item) => ({ id: item.value })),
 				},
 				status: Status.PUBLISHED,
 			},

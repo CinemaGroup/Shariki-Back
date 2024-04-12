@@ -8,5 +8,6 @@ export const productInclude: Prisma.ProductInclude = {
 	categories: true,
 	tags: true,
 	holidays: true,
+	collections: true,
 	orderItems: true,
 }

@@ -9,10 +9,10 @@ import { QueryInput } from 'src/global/inputs/query.input'
 import { PrismaService } from 'src/prisma/prisma.service'
 import { generateSlug } from 'src/utils/generateSlug'
 import { PaginationService } from '../pagination/pagination.service'
-import { HolidayInput } from './inputs/holiday.input'
+import { CollectionInput } from './inputs/collection.input'
 
 @Injectable()
-export class HolidayService {
+export class CollectionService {
 	constructor(
 		private readonly prisma: PrismaService,
 		private readonly paginationService: PaginationService
@@ -23,7 +23,7 @@ export class HolidayService {
 
 		const filters = this.createFilter(input)
 
-		return this.prisma.holiday.findMany({
+		return this.prisma.collection.findMany({
 			where: filters,
 			orderBy: this.getAllSortOption(input.sort),
 			skip,
@@ -31,8 +31,8 @@ export class HolidayService {
 		})
 	}
 
-	private createFilter(input: QueryInput): Prisma.HolidayWhereInput {
-		const filters: Prisma.HolidayWhereInput[] = []
+	private createFilter(input: QueryInput): Prisma.CollectionWhereInput {
+		const filters: Prisma.CollectionWhereInput[] = []
 
 		if (input.searchTerm)
 			filters.push(this.getSearchTermFilter(input.searchTerm))
@@ -44,7 +44,7 @@ export class HolidayService {
 
 	private getAllSortOption(
 		sort: Sort
-	): Prisma.HolidayOrderByWithRelationInput[] {
+	): Prisma.CollectionOrderByWithRelationInput[] {
 		switch (sort) {
 			case Sort.NEWEST:
 				return [{ createdAt: 'desc' }]
@@ -53,13 +53,13 @@ export class HolidayService {
 		}
 	}
 
-	private getStatusFilter(status: Status): Prisma.HolidayWhereInput {
+	private getStatusFilter(status: Status): Prisma.CollectionWhereInput {
 		return {
 			status,
 		}
 	}
 
-	private getSearchTermFilter(searchTerm: string): Prisma.HolidayWhereInput {
+	private getSearchTermFilter(searchTerm: string): Prisma.CollectionWhereInput {
 		return {
 			name: {
 				contains: searchTerm,
@@ -70,27 +70,27 @@ export class HolidayService {
 
 	// Admin Place
 	async byId(id: number) {
-		const holiday = await this.prisma.holiday.findUnique({
+		const collection = await this.prisma.collection.findUnique({
 			where: {
 				id,
 			},
 		})
 
-		if (!holiday) throw new NotFoundException('Праздник не найден.')
+		if (!collection) throw new NotFoundException('Коллекция не найдена.')
 
-		return holiday
+		return collection
 	}
 
 	async togglePublished(id: number) {
-		const holiday = await this.byId(id)
+		const collection = await this.byId(id)
 
-		return this.prisma.holiday.update({
+		return this.prisma.collection.update({
 			where: {
 				id,
 			},
 			data: {
 				status:
-					holiday.status === Status.PUBLISHED
+					collection.status === Status.PUBLISHED
 						? Status.HIDDEN
 						: Status.PUBLISHED,
 			},
@@ -98,10 +98,10 @@ export class HolidayService {
 	}
 
 	async duplicate(id: number) {
-		const holiday = await this.byId(id)
-		const name = await this.generateUniqueSlug(holiday.name)
+		const collection = await this.byId(id)
+		const name = await this.generateUniqueSlug(collection.name)
 
-		return this.prisma.holiday.create({
+		return this.prisma.collection.create({
 			data: {
 				name,
 				slug: generateSlug(name),
@@ -111,15 +111,15 @@ export class HolidayService {
 	}
 
 	async create() {
-		const isExists = await this.prisma.holiday.findUnique({
+		const isExists = await this.prisma.collection.findUnique({
 			where: {
 				slug: '',
 			},
 		})
 
-		if (isExists) throw new BadRequestException('Праздник уже существует.')
+		if (isExists) throw new BadRequestException('Коллекция уже существует.')
 
-		return this.prisma.holiday.create({
+		return this.prisma.collection.create({
 			data: {
 				name: '',
 				slug: '',
@@ -130,21 +130,21 @@ export class HolidayService {
 		})
 	}
 
-	async update(id: number, input: HolidayInput) {
-		const holiday = await this.byId(id)
+	async update(id: number, input: CollectionInput) {
+		const collection = await this.byId(id)
 
-		const isExists = await this.prisma.holiday.findUnique({
+		const isExists = await this.prisma.collection.findUnique({
 			where: {
 				slug: generateSlug(input.name),
 				NOT: {
-					slug: holiday.slug,
+					slug: collection.slug,
 				},
 			},
 		})
 
-		if (isExists) throw new BadRequestException('Праздник уже существует.')
+		if (isExists) throw new BadRequestException('Коллекция уже существует.')
 
-		return this.prisma.holiday.update({
+		return this.prisma.collection.update({
 			where: {
 				id,
 			},
@@ -157,7 +157,7 @@ export class HolidayService {
 	}
 
 	async delete(id: number) {
-		return this.prisma.holiday.delete({
+		return this.prisma.collection.delete({
 			where: {
 				id,
 			},

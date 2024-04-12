@@ -9,6 +9,7 @@ import { Type } from 'src/resources/type/entities/type.entity'
 import { Characteristic } from '../characteristic/entities/characteristic.entity'
 import { Color } from '../color/entities/color.entity'
 import { Size } from '../size/entities/size.entity'
+import { Collection } from 'src/resources/collection/entities/collection.entity'
 
 @ObjectType()
 export class Product {
@@ -68,6 +69,9 @@ export class Product {
 
 	@Field(() => [Holiday])
 	holidays: Holiday[]
+
+	@Field(() => [Collection])
+	collections: Collection[]
 
 	@Field(() => [OrderItem])
 	orderItems: OrderItem[]

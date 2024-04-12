@@ -116,15 +116,29 @@ model Holiday {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  name      String @unique
-  slug      String @unique
-  imagePath String @map("image_path")
+  name String @unique
+  slug String @unique
 
   products Product[]
 
   status Status @default(HIDDEN)
 
   @@map("holiday")
+}
+
+model Collection {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  name String @unique
+  slug String @unique
+
+  products Product[]
+
+  status Status @default(HIDDEN)
+
+  @@map("collection")
 }
 
 model Tag {
@@ -200,8 +214,8 @@ model Color {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  color    String
-  images   String[]
+  color  String
+  images String[]
 
   product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
   productId Int     @map("product_id")
@@ -231,10 +245,10 @@ model Product {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  name        String  @unique
-  slug        String  @unique
+  name        String   @unique
+  slug        String   @unique
   sku         String
-  iconPath    String? @map("icon_path")
+  iconPath    String?  @map("icon_path")
   description String
 
   packageQuantity Int     @default(100) @map("package_quantity")
@@ -248,10 +262,11 @@ model Product {
   views       Int @default(0)
   boughtTimes Int @default(0) @map("bought_times")
 
-  types      Type[]
-  categories Category[]
-  tags       Tag[]
-  holidays   Holiday[]
+  types       Type[]
+  categories  Category[]
+  tags        Tag[]
+  holidays    Holiday[]
+  collections Collection[]
 
   orderItems OrderItem[]
 

@@ -1,7 +1,7 @@
 import { Field, Int, ObjectType } from '@nestjs/graphql'
-import { GraphQLDeweyDecimal } from 'graphql-scalars'
 import { Status } from 'src/global/enums/query.enum'
 import { Category } from 'src/resources/category/entities/category.entity'
+import { Collection } from 'src/resources/collection/entities/collection.entity'
 import { Holiday } from 'src/resources/holiday/entities/holiday.entity'
 import { OrderItem } from 'src/resources/order/item/entities/order-item.entity'
 import { Tag } from 'src/resources/tag/entities/tag.entity'
@@ -9,7 +9,6 @@ import { Type } from 'src/resources/type/entities/type.entity'
 import { Characteristic } from '../characteristic/entities/characteristic.entity'
 import { Color } from '../color/entities/color.entity'
 import { Size } from '../size/entities/size.entity'
-import { Collection } from 'src/resources/collection/entities/collection.entity'
 
 @ObjectType()
 export class Product {
@@ -37,10 +36,10 @@ export class Product {
 	@Field(() => Int)
 	packageQuantity: number
 
-	@Field(() => GraphQLDeweyDecimal)
+	@Field(() => String)
 	price: number
 
-	@Field(() => GraphQLDeweyDecimal, { nullable: true })
+	@Field(() => String, { nullable: true })
 	oldPrice?: number
 
 	@Field(() => [Size])

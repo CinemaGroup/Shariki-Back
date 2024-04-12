@@ -28,13 +28,16 @@ export class ProductService {
 			filters.oldPrice = { not: null }
 		}
 
-		return this.prisma.product.findMany({
+		const products = await this.prisma.product.findMany({
 			where: filters,
 			orderBy: this.getAllSortOption(input.sort),
 			skip,
 			take: perPage,
 			include: productInclude,
 		})
+
+		console.log(products)
+		return products
 	}
 
 	private createFilter(input: QueryProductInput): Prisma.ProductWhereInput {

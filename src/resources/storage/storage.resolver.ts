@@ -13,20 +13,20 @@ export class StorageResolver {
 	constructor(private readonly storageService: StorageService) {}
 
 	@Query(() => [FolderWithChild], { name: 'folders' })
-	@Auth(UserRole.ADMIN)
+	// @Auth(UserRole.ADMIN)
 	async getDirectories() {
 		return this.storageService.getDirectories('uploads')
 	}
 
 	@Query(() => StorageItem, { name: 'folderItems' })
-	@Auth(UserRole.ADMIN)
+	// @Auth(UserRole.ADMIN)
 	async getFolderItems(
 		@Args('folderPath', { type: () => String }) folderPath: string
 	) {
 		return this.storageService.getFolderItems(folderPath)
 	}
 
-	@Auth(UserRole.ADMIN)
+	// @Auth(UserRole.ADMIN)
 	@Mutation(() => String, { name: 'uploadFiles' })
 	async uploadFiles(
 		@Args('data', { type: () => UploadFilesInput }) input: UploadFilesInput
@@ -39,7 +39,7 @@ export class StorageResolver {
 		}
 	}
 
-	@Auth(UserRole.ADMIN)
+	// @Auth(UserRole.ADMIN)
 	@Mutation(() => String, { name: 'createFolder' })
 	async createFolder(
 		@Args('data', { type: () => CreateFolderInput }) input: CreateFolderInput
@@ -47,13 +47,13 @@ export class StorageResolver {
 		return this.storageService.createFolder(input)
 	}
 
-	@Auth(UserRole.ADMIN)
+	// @Auth(UserRole.ADMIN)
 	@Mutation(() => String, { name: 'deleteFileOrFolder' })
 	async deleteFileOrFolder(@Args('path', { type: () => String }) path: string) {
 		return this.storageService.deleteFileOrFolder(path)
 	}
 
-	@Auth(UserRole.ADMIN)
+	// @Auth(UserRole.ADMIN)
 	@Mutation(() => String, { name: 'editFileOrFolderName' })
 	async editFileOrFolderName(
 		@Args('data', { type: () => EditFileOrFolderNameInput })

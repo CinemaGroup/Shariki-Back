@@ -19,6 +19,8 @@ import { TagModule } from './resources/tag/tag.module'
 import { TypeModule } from './resources/type/type.module'
 import { UserModule } from './resources/user/user.module'
 import { CollectionModule } from './resources/collection/collection.module';
+import { CatalogModule } from './resources/catalog/catalog.module';
+import { FiltersModule } from './resources/filters/filters.module';
 
 @Module({
 	imports: [
@@ -45,6 +47,8 @@ import { CollectionModule } from './resources/collection/collection.module';
 		HolidayModule,
 		StorageModule,
 		CollectionModule,
+		CatalogModule,
+		FiltersModule,
 	],
 	controllers: [AppController],
 	providers: [AppService],

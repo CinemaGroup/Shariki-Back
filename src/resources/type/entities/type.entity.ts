@@ -16,6 +16,9 @@ export class Type {
 	@Field(() => String)
 	iconPath: string
 
+	@Field(() => String, { nullable: true })
+	uncheckedIconPath?: string
+
 	@Field(() => [Product])
 	products: Product[]
 

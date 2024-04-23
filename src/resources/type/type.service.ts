@@ -102,6 +102,7 @@ export class TypeService {
 				name,
 				slug: generateSlug(name),
 				iconPath: type.iconPath,
+				uncheckedIconPath: type.uncheckedIconPath,
 				status: Status.PUBLISHED,
 			},
 		})
@@ -130,7 +131,7 @@ export class TypeService {
 
 	async update(id: number, input: TypeInput) {
 		const type = await this.byId(id)
-
+		console.log(input)
 		const isExists = await this.prisma.type.findUnique({
 			where: {
 				slug: generateSlug(input.name),
@@ -150,6 +151,7 @@ export class TypeService {
 				name: input.name,
 				slug: generateSlug(input.name),
 				iconPath: input.iconPath,
+				uncheckedIconPath: input.uncheckedIconPath,
 				status: Status.PUBLISHED,
 			},
 		})

@@ -13,6 +13,9 @@ export class Category {
 	@Field(() => String)
 	slug: string
 
+	@Field(() => String, { nullable: true })
+	imagePath?: string
+
 	@Field(() => [Product])
 	products: Product[]
 

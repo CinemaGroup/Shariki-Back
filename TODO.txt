@@ -11,3 +11,5 @@ Type - Метка на карточке с иконкой - ✅
 Product - ✅
 Color - ✅
 Size - ✅
+
+hanel collectiony type-ic

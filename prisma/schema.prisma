@@ -166,6 +166,8 @@ model Category {
   name String @unique
   slug String @unique
 
+  imagePath String?
+
   products Product[]
 
   categories Category[] @relation("ParentCategories")
@@ -187,6 +189,7 @@ model Type {
   slug String @unique
 
   iconPath String @map("icon_path")
+  uncheckedIconPath String? @map("unchecked_icon_path")
 
   products Product[]
 

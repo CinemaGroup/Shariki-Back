@@ -8,6 +8,7 @@ import { Sort, Status } from 'src/global/enums/query.enum'
 import { PrismaService } from 'src/prisma/prisma.service'
 import { generateSlug } from 'src/utils/generateSlug'
 import { PaginationService } from '../pagination/pagination.service'
+import { CharacteristicType } from './characteristic/enum/characteristic.enum'
 import { productInclude } from './includes/product.include'
 import { ProductInput } from './inputs/product.input'
 import { QueryProductInput } from './inputs/query-product.input'
@@ -19,24 +20,162 @@ export class ProductService {
 		private readonly paginationService: PaginationService
 	) {}
 
-	async getAll(input: QueryProductInput, isSale?: boolean) {
+	async getAll(
+		input: QueryProductInput,
+		isSale?: boolean,
+		categorySlug?: string
+	) {
 		const { perPage, skip } = this.paginationService.getPagination(input)
 
-		const filters = this.createFilter(input)
+		let filters = this.createFilter(input)
 
 		if (isSale) {
 			filters.oldPrice = { not: null }
 		}
 
-		const products = await this.prisma.product.findMany({
+		if (categorySlug) {
+			filters = {
+				...filters,
+				categories: {
+					some: {
+						slug: categorySlug,
+						OR: [
+							{ categories: { some: { slug: categorySlug } } },
+							{
+								categories: {
+									some: { categories: { some: { slug: categorySlug } } },
+								},
+							},
+							{
+								categories: {
+									some: {
+										categories: {
+											some: { categories: { some: { slug: categorySlug } } },
+										},
+									},
+								},
+							},
+							{
+								categories: {
+									some: {
+										categories: {
+											some: {
+												categories: {
+													some: {
+														categories: { some: { slug: categorySlug } },
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						],
+					},
+				},
+			}
+		}
+
+		let allProducts = await this.prisma.product.findMany({
 			where: filters,
 			orderBy: this.getAllSortOption(input.sort),
-			skip,
-			take: perPage,
 			include: productInclude,
 		})
 
-		console.log(products)
+		const filteredProducts = allProducts.filter((product) => {
+			const price = parseFloat(product.price)
+
+			if (input.min && input.max) {
+				return price >= parseFloat(input.min) && price <= parseFloat(input.max)
+			} else if (input.min) {
+				return price >= parseFloat(input.min)
+			} else if (input.max) {
+				return price <= parseFloat(input.max)
+			}
+
+			return true
+		})
+
+		const paginatedProducts = filteredProducts.slice(skip, skip + perPage)
+
+		const count = filteredProducts.length
+
+		return {
+			products: paginatedProducts,
+			count,
+		}
+	}
+
+	async allProducts(input: QueryProductInput, categorySlug?: string) {
+		let filters = this.createFilter(input)
+
+		if (categorySlug) {
+			filters = {
+				...filters,
+				categories: {
+					some: {
+						slug: categorySlug,
+						OR: [
+							{ categories: { some: { slug: categorySlug } } },
+							{
+								categories: {
+									some: { categories: { some: { slug: categorySlug } } },
+								},
+							},
+							{
+								categories: {
+									some: {
+										categories: {
+											some: { categories: { some: { slug: categorySlug } } },
+										},
+									},
+								},
+							},
+							{
+								categories: {
+									some: {
+										categories: {
+											some: {
+												categories: {
+													some: {
+														categories: { some: { slug: categorySlug } },
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						],
+					},
+				},
+			}
+		}
+
+		let products = await this.prisma.product.findMany({
+			where: filters,
+			orderBy: this.getAllSortOption(input.sort),
+			include: productInclude,
+		})
+
+		if (input.min || input.max) {
+			products = products.filter((product) => {
+				const price = parseFloat(product.price)
+
+				if (input.min && input.max) {
+					return (
+						price >= parseFloat(input.min) && price <= parseFloat(input.max)
+					)
+				} else if (input.min) {
+					return price >= parseFloat(input.min)
+				} else if (input.max) {
+					return price <= parseFloat(input.max)
+				}
+
+				return true
+			})
+		}
+
 		return products
 	}
 
@@ -47,6 +186,25 @@ export class ProductService {
 			filters.push(this.getSearchTermFilter(input.searchTerm))
 
 		if (input.status) filters.push(this.getPublishedFilter(input.status))
+
+		if (input.sizes && input.sizes.length > 0)
+			filters.push(this.getSizesFilter(input.sizes))
+		if (input.colors && input.colors.length > 0)
+			filters.push(this.getColorsFilter(input.colors))
+		if (input.hues && input.hues.length > 0)
+			filters.push(this.getHuesFilter(input.hues))
+		if (input.types && input.types.length > 0)
+			filters.push(this.getTypesFilter(input.types))
+		if (input.manufacturers && input.manufacturers.length > 0)
+			filters.push(this.getManufacturersFilter(input.manufacturers))
+		if (input.materials && input.materials.length > 0)
+			filters.push(this.getMaterialsFilter(input.materials))
+		if (input.collections && input.collections.length > 0)
+			filters.push(this.getCollectionsFilter(input.collections))
+		if (input.holidays && input.holidays.length > 0)
+			filters.push(this.getHolidaysFilter(input.holidays))
+		if (input.countries && input.countries.length > 0)
+			filters.push(this.getCountriesFilter(input.countries))
 
 		return filters.length ? { AND: filters } : {}
 	}
@@ -73,6 +231,123 @@ export class ProductService {
 			name: {
 				contains: searchTerm,
 				mode: 'insensitive',
+			},
+		}
+	}
+
+	private getSizesFilter(sizes: string[]): Prisma.ProductWhereInput {
+		return {
+			sizes: {
+				some: {
+					size: {
+						in: sizes.map((size) => size),
+					},
+				},
+			},
+		}
+	}
+
+	private getColorsFilter(colors: string[]): Prisma.ProductWhereInput {
+		return {
+			characteristics: {
+				some: {
+					slug: {
+						in: colors.map((color) => color),
+					},
+					type: CharacteristicType.COLOR,
+				},
+			},
+		}
+	}
+
+	private getHuesFilter(hues: string[]): Prisma.ProductWhereInput {
+		return {
+			characteristics: {
+				some: {
+					slug: {
+						in: hues.map((hue) => hue),
+					},
+					type: CharacteristicType.HUE,
+				},
+			},
+		}
+	}
+
+	private getManufacturersFilter(
+		manufacturers: string[]
+	): Prisma.ProductWhereInput {
+		return {
+			characteristics: {
+				some: {
+					slug: {
+						in: manufacturers.map((manufacturer) => manufacturer),
+					},
+					type: CharacteristicType.MANUFACTURER,
+				},
+			},
+		}
+	}
+
+	private getMaterialsFilter(materials: string[]): Prisma.ProductWhereInput {
+		return {
+			characteristics: {
+				some: {
+					slug: {
+						in: materials.map((material) => material),
+					},
+					type: CharacteristicType.MATERIAL,
+				},
+			},
+		}
+	}
+
+	private getCountriesFilter(countries: string[]): Prisma.ProductWhereInput {
+		return {
+			characteristics: {
+				some: {
+					slug: {
+						in: countries.map((country) => country),
+					},
+					type: CharacteristicType.COUNTRY,
+				},
+			},
+		}
+	}
+
+	private getTypesFilter(types: string[]): Prisma.ProductWhereInput {
+		return {
+			types: {
+				some: {
+					slug: {
+						in: types.map((type) => type),
+					},
+				},
+			},
+		}
+	}
+
+	private getCollectionsFilter(
+		collections: string[]
+	): Prisma.ProductWhereInput {
+		return {
+			collections: {
+				some: {
+					slug: {
+						in: collections.map((collection) => collection),
+					},
+				},
+			},
+		}
+	}
+
+	private getHolidaysFilter(holidays: string[]): Prisma.ProductWhereInput {
+		return {
+			holidays: {
+				some: {
+					slug: {
+						in: holidays.map((holiday) => holiday),
+					},
+				},
 			},
 		}
 	}

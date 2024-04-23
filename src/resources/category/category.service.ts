@@ -11,6 +11,7 @@ import { generateSlug } from 'src/utils/generateSlug'
 import { PaginationService } from '../pagination/pagination.service'
 import { categoryInclude } from './includes/category.include'
 import { CategoryInput } from './inputs/category.input'
+import { QueryCategoryInput } from './inputs/query-category.input'
 
 @Injectable()
 export class CategoryService {
@@ -19,10 +20,34 @@ export class CategoryService {
 		private readonly paginationService: PaginationService
 	) {}
 
-	async getAll(input: QueryInput) {
+	async getAll(input: QueryCategoryInput, query?: object) {
 		const { perPage, skip } = this.paginationService.getPagination(input)
 
-		const filters = this.createFilter(input)
+		let filters = this.createFilter(input)
+
+		if (input.isParents) {
+			if ('AND' in filters) {
+				filters.AND.push({
+					parentId: null,
+				})
+			} else {
+				filters = {
+					AND: [
+						{
+							parentId: null,
+						},
+					],
+					...filters,
+				}
+			}
+		}
+
+		if (query) {
+			filters = {
+				...filters,
+				...query,
+			}
+		}
 
 		return this.prisma.category.findMany({
 			where: filters,
@@ -32,7 +57,7 @@ export class CategoryService {
 		})
 	}
 
-	private createFilter(input: QueryInput): Prisma.CategoryWhereInput {
+	private createFilter(input: QueryInput) {
 		const filters: Prisma.CategoryWhereInput[] = []
 
 		if (input.searchTerm)
@@ -107,6 +132,7 @@ export class CategoryService {
 			data: {
 				name: name,
 				slug: generateSlug(name),
+				imagePath: category.imagePath,
 				parent: category.parentId
 					? {
 							connect: { id: category.parentId },
@@ -158,6 +184,7 @@ export class CategoryService {
 			data: {
 				name: input.name,
 				slug: generateSlug(input.name),
+				imagePath: input.imagePath,
 				parent: input.parent
 					? {
 							connect: { id: input.parent.value },

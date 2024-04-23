@@ -37,10 +37,10 @@ export class Product {
 	packageQuantity: number
 
 	@Field(() => String)
-	price: number
+	price: string
 
 	@Field(() => String, { nullable: true })
-	oldPrice?: number
+	oldPrice?: string
 
 	@Field(() => [Size])
 	sizes: Size[]
@@ -95,4 +95,13 @@ export class CurrentProduct {
 
 	@Field(() => [Product])
 	similarProducts: Product[]
+}
+
+@ObjectType()
+export class CatalogProduct {
+	@Field(() => [Product])
+	products: Product[]
+
+	@Field(() => Int)
+	count: number
 }

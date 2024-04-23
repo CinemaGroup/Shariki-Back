@@ -10,10 +10,10 @@ export class Size {
 	size: string
 
 	@Field(() => String)
-	price: number
+	price: string
 
 	@Field(() => String, { nullable: true })
-	oldPrice?: number
+	oldPrice?: string
 
 	@Field(() => Product)
 	product: Product

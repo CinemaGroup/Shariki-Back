@@ -1,7 +1,7 @@
 import { Args, Int, Mutation, Query, Resolver } from '@nestjs/graphql'
 import { Auth } from '../auth/decorators/auth.decorator'
 import { UserRole } from '../user/enums/user-role.enum'
-import { CurrentProduct, Product } from './entities/product.entity'
+import { CatalogProduct, CurrentProduct, Product } from './entities/product.entity'
 import { ProductInput } from './inputs/product.input'
 import { QueryProductInput } from './inputs/query-product.input'
 import { ProductService } from './product.service'
@@ -10,7 +10,7 @@ import { ProductService } from './product.service'
 export class ProductResolver {
 	constructor(private readonly productService: ProductService) {}
 
-	@Query(() => [Product], { name: 'products' })
+	@Query(() => CatalogProduct, { name: 'products' })
 	async getAll(
 		@Args('query') input: QueryProductInput,
 		@Args('isSale', { type: () => Boolean, nullable: true }) isSale?: boolean

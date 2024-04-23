@@ -7,4 +7,7 @@ export class TypeInput {
 
 	@Field(() => String)
 	iconPath: string
+
+	@Field(() => String)
+	uncheckedIconPath: string
 }

@@ -1,17 +1,17 @@
 import { Args, Int, Mutation, Query, Resolver } from '@nestjs/graphql'
-import { QueryInput } from 'src/global/inputs/query.input'
 import { Auth } from '../auth/decorators/auth.decorator'
 import { UserRole } from '../user/enums/user-role.enum'
 import { CategoryService } from './category.service'
 import { Category } from './entities/category.entity'
 import { CategoryInput } from './inputs/category.input'
+import { QueryCategoryInput } from './inputs/query-category.input'
 
 @Resolver()
 export class CategoryResolver {
 	constructor(private readonly categoryService: CategoryService) {}
 
 	@Query(() => [Category], { name: 'categories' })
-	async getAll(@Args('query') input: QueryInput) {
+	async getAll(@Args('query') input: QueryCategoryInput) {
 		return this.categoryService.getAll(input)
 	}
 
@@ -27,7 +27,7 @@ export class CategoryResolver {
 	async togglePublished(@Args('id', { type: () => Int }) id: number) {
 		return this.categoryService.togglePublished(id)
 	}
-	
+
 	@Auth(UserRole.ADMIN)
 	@Mutation(() => Category, { name: 'duplicateCategory' })
 	async duplicate(@Args('id', { type: () => Int }) id: number) {

@@ -1,5 +1,21 @@
 import { Prisma } from '@prisma/client'
 
 export const categoryInclude: Prisma.CategoryInclude = {
-	parent: true,
+	parent: {
+		include: {
+			parent: {
+				include: {
+					parent: {
+						include: {
+							parent: {
+								include: {
+									parent: true,
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	},
 }

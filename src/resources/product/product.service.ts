@@ -82,7 +82,7 @@ export class ProductService {
 			include: productInclude,
 		})
 
-		const filteredProducts = allProducts.filter((product) => {
+		let filteredProducts = allProducts.filter((product) => {
 			const price = parseFloat(product.price)
 
 			if (input.min && input.max) {
@@ -96,12 +96,14 @@ export class ProductService {
 			return true
 		})
 
-		const paginatedProducts = filteredProducts.slice(skip, skip + perPage)
-
 		const count = filteredProducts.length
 
+		if (input.perPage && input.page) {
+			filteredProducts = filteredProducts.slice(skip, skip + perPage)
+		}
+
 		return {
-			products: paginatedProducts,
+			products: filteredProducts,
 			count,
 		}
 	}

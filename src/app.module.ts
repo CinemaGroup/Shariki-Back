@@ -21,6 +21,7 @@ import { UserModule } from './resources/user/user.module'
 import { CollectionModule } from './resources/collection/collection.module';
 import { CatalogModule } from './resources/catalog/catalog.module';
 import { FiltersModule } from './resources/filters/filters.module';
+import { PagesModule } from './resources/pages/pages.module';
 
 @Module({
 	imports: [
@@ -49,6 +50,7 @@ import { FiltersModule } from './resources/filters/filters.module';
 		CollectionModule,
 		CatalogModule,
 		FiltersModule,
+		PagesModule,
 	],
 	controllers: [AppController],
 	providers: [AppService],

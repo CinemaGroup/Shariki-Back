@@ -44,8 +44,7 @@ export class CategoryService {
 
 		if (query) {
 			filters = {
-				...filters,
-				...query,
+				AND: [filters, query],
 			}
 		}
 
@@ -54,6 +53,7 @@ export class CategoryService {
 			orderBy: this.getAllSortOption(input.sort),
 			skip,
 			take: perPage,
+			include: categoryInclude
 		})
 	}
 

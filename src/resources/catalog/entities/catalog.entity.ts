@@ -8,6 +8,9 @@ export class Catalog {
 	@Field(() => [Category])
 	categories: Category[]
 
+	@Field(() => Category, { nullable: true })
+	rootCategory?: Category
+
 	@Field(() => [Product])
 	products: Product[]
 

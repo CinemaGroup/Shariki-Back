@@ -1,4 +1,4 @@
-import { Field, ObjectType } from '@nestjs/graphql'
+import { Field, Int, ObjectType } from '@nestjs/graphql'
 import { File } from './file.entity'
 import { Folder } from './folder.entity'
 
@@ -9,4 +9,7 @@ export class StorageItem {
 
 	@Field(() => [File])
 	files: File[]
+
+	@Field(() => Int)
+	count: number
 }

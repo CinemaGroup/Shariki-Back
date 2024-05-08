@@ -13,9 +13,9 @@ export class ProductResolver {
 	@Query(() => CatalogProduct, { name: 'products' })
 	async getAll(
 		@Args('query') input: QueryProductInput,
-		@Args('isSale', { type: () => Boolean, nullable: true }) isSale?: boolean
+		@Args('isPopular', { type: () => Boolean, nullable: true }) isPopular?: boolean
 	) {
-		return this.productService.getAll(input, isSale)
+		return this.productService.getAll(input, isPopular)
 	}
 
 	@Query(() => CurrentProduct, { name: 'productBySlug' })

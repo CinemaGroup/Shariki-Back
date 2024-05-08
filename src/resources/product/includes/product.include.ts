@@ -5,7 +5,27 @@ export const productInclude: Prisma.ProductInclude = {
 	colors: true,
 	characteristics: true,
 	types: true,
-	categories: true,
+	categories: {
+		include: {
+			categories: {
+				include: {
+					categories: {
+						include: {
+							categories: {
+								include: {
+									categories: {
+										include: {
+											categories: true,
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	},
 	tags: true,
 	holidays: true,
 	collections: true,

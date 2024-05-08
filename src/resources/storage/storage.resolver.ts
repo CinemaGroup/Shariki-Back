@@ -1,12 +1,11 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql'
-import { UserRole } from '../user/enums/user-role.enum'
+import { PaginationInput } from '../pagination/inputs/pagination.input'
 import { FolderWithChild } from './entities/folder.entity'
 import { StorageItem } from './entities/storage-item.entity'
 import { CreateFolderInput } from './inputs/create-folder.input'
 import { EditFileOrFolderNameInput } from './inputs/edit-file-or-folder-name.input'
 import { UploadFilesInput } from './inputs/upload-files.input'
 import { StorageService } from './storage.service'
-import { Auth } from '../auth/decorators/auth.decorator'
 
 @Resolver()
 export class StorageResolver {
@@ -21,9 +20,10 @@ export class StorageResolver {
 	@Query(() => StorageItem, { name: 'folderItems' })
 	// @Auth(UserRole.ADMIN)
 	async getFolderItems(
-		@Args('folderPath', { type: () => String }) folderPath: string
+		@Args('folderPath', { type: () => String }) folderPath: string,
+		@Args('query') input: PaginationInput
 	) {
-		return this.storageService.getFolderItems(folderPath)
+		return this.storageService.getFolderItems(folderPath, input)
 	}
 
 	// @Auth(UserRole.ADMIN)

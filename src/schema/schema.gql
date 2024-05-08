@@ -2,6 +2,21 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type About {
+  content: String!
+  name: String!
+}
+
+input AboutInput {
+  content: String!
+  name: String!
+}
+
+type AllPosts {
+  count: Int!
+  posts: [Post!]!
+}
+
 input AuthLoginInput {
   email: String!
   password: String!
@@ -34,6 +49,7 @@ type Catalog {
   filters: Filters!
   products: [Product!]!
   productsCount: Int!
+  rootCategory: Category
 }
 
 input CatalogInput {
@@ -187,6 +203,16 @@ type FolderWithChild {
   path: String!
 }
 
+type ForBuyers {
+  content: String!
+  name: String!
+}
+
+input ForBuyersInput {
+  content: String!
+  name: String!
+}
+
 type Holiday {
   createdAt: DateTime!
   id: Int!
@@ -216,6 +242,7 @@ type Mutation {
   createPost: Post!
   createProduct: Product!
   createReview: Review!
+  createRubric: Rubric!
   createTag: Tag!
   createType: Type!
   deleteCategory(id: Int!): Category!
@@ -226,13 +253,17 @@ type Mutation {
   deletePost(id: Int!): Post!
   deleteProduct(id: Int!): Product!
   deleteReview(id: Int!): Review!
+  deleteRubric(id: Int!): Rubric!
   deleteTag(id: Int!): Tag!
   deleteType(id: Int!): Type!
   duplicateCategory(id: Int!): Category!
   duplicateCharacteristic(id: Int!): Characteristic!
   duplicateCollection(id: Int!): Collection!
   duplicateHoliday(id: Int!): Holiday!
+  duplicatePost(id: Int!): Post!
   duplicateProduct(id: Int!): Product!
+  duplicateReview(id: Int!): Review!
+  duplicateRubric(id: Int!): Rubric!
   duplicateTag(id: Int!): Tag!
   duplicateType(id: Int!): Type!
   editFileOrFolderName(data: EditFileOrFolderNameInput!): String!
@@ -246,15 +277,20 @@ type Mutation {
   togglePost(id: Int!): Post!
   toggleProduct(id: Int!): Product!
   toggleReview(id: Int!): Review!
+  toggleRubric(id: Int!): Rubric!
   toggleTag(id: Int!): Tag!
   toggleType(id: Int!): Type!
+  updateAbout(data: AboutInput!): About!
   updateCategory(data: CategoryInput!, id: Int!): Category!
   updateCharacteristic(data: CharacteristicInput!, id: Int!): Characteristic!
   updateCollection(data: CollectionInput!, id: Int!): Collection!
+  updateForBuyers(data: ForBuyersInput!): ForBuyers!
   updateHoliday(data: HolidayInput!, id: Int!): Holiday!
   updatePost(data: PostInput!, id: Int!): Post!
   updateProduct(data: ProductInput!, id: Int!): Product!
   updateReview(data: ReviewInput!, id: Int!): Review!
+  updateRubric(data: RubricInput!, id: Int!): Rubric!
+  updateShippingAndPayment(data: ShippingAndPaymentInput!): ShippingAndPayment!
   updateTag(data: TagInput!, id: Int!): Tag!
   updateType(data: TypeInput!, id: Int!): Type!
   uploadFiles(data: UploadFilesInput!): String!
@@ -294,6 +330,11 @@ enum OrderStatus {
   REFUNDED
 }
 
+input PaginationInput {
+  page: String
+  perPage: String
+}
+
 enum PaymentMethod {
   YOOKASSA
 }
@@ -318,7 +359,7 @@ input PostInput {
   excerpt: String!
   name: String!
   poster: String!
-  rubrics: [Int!]!
+  rubrics: [SelectInput!]!
 }
 
 type Product {
@@ -386,6 +427,7 @@ type ProfileResponse {
 }
 
 type Query {
+  about: About!
   catalog(data: CatalogInput!): Catalog!
   categories(query: QueryCategoryInput!): [Category!]!
   categoryById(id: Int!): Category!
@@ -393,18 +435,23 @@ type Query {
   characteristics(query: QueryInput!): [Characteristic!]!
   collectionById(id: Int!): Collection!
   collections(query: QueryInput!): [Collection!]!
-  folderItems(folderPath: String!): StorageItem!
+  folderItems(folderPath: String!, query: PaginationInput!): StorageItem!
   folders: [FolderWithChild!]!
+  forBuyers: ForBuyers!
   holidayById(id: Int!): Holiday!
   holidays(query: QueryInput!): [Holiday!]!
   postById(id: Int!): Post!
-  posts(query: QueryInput!): [Post!]!
+  postBySlug(slug: String!): Post!
+  posts(query: QueryInput!): AllPosts!
   productById(id: Int!): Product!
   productBySlug(slug: String!): CurrentProduct!
-  products(isSale: Boolean, query: QueryProductInput!): CatalogProduct!
+  products(isPopular: Boolean, query: QueryProductInput!): CatalogProduct!
   profile: ProfileResponse!
   reviewById(id: Int!): Review!
   reviews(query: QueryInput!): [Review!]!
+  rubricById(id: Int!): Rubric!
+  rubrics(query: QueryInput!): [Rubric!]!
+  shippingAndPayment: ShippingAndPayment!
   tagById(id: Int!): Tag!
   tags(query: QueryInput!): [Tag!]!
   typeById(id: Int!): Type!
@@ -445,6 +492,7 @@ input QueryProductInput {
   sizes: [String!]
   sort: Sort!
   status: Status
+  tags: [String!]
   types: [String!]
 }
 
@@ -479,9 +527,27 @@ type Rubric {
   updatedAt: DateTime!
 }
 
+input RubricInput {
+  name: String!
+}
+
 input SelectInput {
   name: String!
   value: Int!
+}
+
+type ShippingAndPayment {
+  paymentContent: String!
+  paymentName: String!
+  shippingContent: String!
+  shippingName: String!
+}
+
+input ShippingAndPaymentInput {
+  paymentContent: String!
+  paymentName: String!
+  shippingContent: String!
+  shippingName: String!
 }
 
 type Size {
@@ -512,6 +578,7 @@ enum Status {
 }
 
 type StorageItem {
+  count: Int!
   files: [File!]!
   folders: [Folder!]!
 }

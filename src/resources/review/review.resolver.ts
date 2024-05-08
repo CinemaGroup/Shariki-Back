@@ -30,6 +30,12 @@ export class ReviewResolver {
 	}
 
 	@Auth(UserRole.ADMIN)
+	@Mutation(() => Review, { name: 'duplicateReview' })
+	async duplicate(@Args('id', { type: () => Int }) id: number) {
+		return this.reviewService.duplicate(id)
+	}
+
+	@Auth(UserRole.ADMIN)
 	@Mutation(() => Review, { name: 'createReview' })
 	async create() {
 		return this.reviewService.create()

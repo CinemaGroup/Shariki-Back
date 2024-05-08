@@ -11,6 +11,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config'
 import { JwtModule } from '@nestjs/jwt'
 import { getJwtConfig } from 'src/config/jwt.config'
 import { AuthModule } from '../auth/auth.module'
+import { PaginationService } from '../pagination/pagination.service'
 
 @Module({
 	imports: [
@@ -33,6 +34,7 @@ import { AuthModule } from '../auth/auth.module'
 		AuthService,
 		JwtStrategy,
 		UserService,
+		PaginationService
 	],
 })
 export class StorageModule {}

@@ -17,7 +17,6 @@ export class FiltersService {
 		let holidays: FiltersItem[] = []
 		let prices: number[] = []
 
-		// Модифицированная функция обновления счетчика фильтров
 		const updateFilterCount = (filter: FiltersItem[], value: string) => {
 			const index = filter.findIndex((item) => item.value === value)
 			if (index !== -1) {

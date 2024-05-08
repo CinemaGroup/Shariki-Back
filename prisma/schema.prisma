@@ -188,7 +188,7 @@ model Type {
   name String @unique
   slug String @unique
 
-  iconPath String @map("icon_path")
+  iconPath          String  @map("icon_path")
   uncheckedIconPath String? @map("unchecked_icon_path")
 
   products Product[]
@@ -363,4 +363,39 @@ model OrderItem {
   orderId Int   @map("order_id")
 
   @@map("order_item")
+}
+
+model ShippingAndPayment {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  shippingName    String @map("shipping_name")
+  shippingContent String @map("shipping_content")
+  paymentName     String @map("payment_name")
+  paymentContent  String @map("payment_content")
+
+  @@map("shipping_and_payment")
+}
+
+model ForBuyers {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  name    String
+  content String
+
+  @@map("for_buyers")
+}
+
+model About {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  name    String
+  content String
+
+  @@map("about")
 }

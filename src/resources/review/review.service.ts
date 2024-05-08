@@ -5,6 +5,7 @@ import { QueryInput } from 'src/global/inputs/query.input'
 import { Prisma } from '@prisma/client'
 import { Sort, Status } from 'src/global/enums/query.enum'
 import { ReviewInput } from './inputs/review.input'
+import { generateSlug } from 'src/utils/generateSlug'
 
 @Injectable()
 export class ReviewService {
@@ -88,6 +89,19 @@ export class ReviewService {
 					review.status === Status.PUBLISHED
 						? Status.HIDDEN
 						: Status.PUBLISHED,
+			},
+		})
+	}
+
+	async duplicate(id: number) {
+		const review = await this.byId(id)
+
+		return this.prisma.review.create({
+			data: {
+				author: review.author,
+				photo: review.photo,
+				content: review.content,
+				status: Status.PUBLISHED,
 			},
 		})
 	}

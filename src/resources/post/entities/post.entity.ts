@@ -37,3 +37,12 @@ export class Post {
 	@Field(() => Date)
 	createdAt: Date
 }
+
+@ObjectType()
+export class AllPosts {
+	@Field(() => [Post])
+	posts: Post[]
+	
+	@Field(() => Int)
+	count: number
+}

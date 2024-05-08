@@ -24,13 +24,22 @@ export class PostService {
 
 		const filters = this.createFilter(input)
 
-		return this.prisma.post.findMany({
+		const posts = await this.prisma.post.findMany({
 			where: filters,
 			orderBy: this.getAllSortOption(input.sort),
 			skip,
 			take: perPage,
 			include: postInclude,
 		})
+
+		const count = await this.prisma.post.count({
+			where: filters,
+		})
+
+		return {
+			posts: posts || [],
+			count: count || 0,
+		}
 	}
 
 	private createFilter(input: QueryInput): Prisma.PostWhereInput {
@@ -68,6 +77,19 @@ export class PostService {
 		}
 	}
 
+	async bySlug(slug: string) {
+		const post = await this.prisma.post.findUnique({
+			where: {
+				slug,
+			},
+			include: postInclude,
+		})
+
+		if (!post) throw new NotFoundException('Пост не найден.')
+
+		return post
+	}
+
 	// Admin Place
 	async byId(id: number) {
 		const post = await this.prisma.post.findUnique({
@@ -92,6 +114,26 @@ export class PostService {
 			data: {
 				status:
 					post.status === Status.PUBLISHED ? Status.HIDDEN : Status.PUBLISHED,
+			},
+		})
+	}
+
+	async duplicate(id: number) {
+		const post = await this.byId(id)
+		const name = await this.generateUniqueSlug(post.name)
+
+		return this.prisma.post.create({
+			data: {
+				name,
+				slug: generateSlug(name),
+				excerpt: post.excerpt,
+				description: post.description,
+				poster: post.poster,
+				bigPoster: post.bigPoster,
+				rubrics: {
+					connect: post.rubrics.map((rubric) => ({ id: rubric.id })),
+				},
+				status: Status.PUBLISHED,
 			},
 		})
 	}
@@ -146,7 +188,7 @@ export class PostService {
 				poster: input.poster,
 				bigPoster: input.bigPoster,
 				rubrics: {
-					connect: input.rubrics.map((rubric) => ({ id: rubric })),
+					connect: input.rubrics.map((rubric) => ({ id: rubric.value })),
 				},
 				status: Status.PUBLISHED,
 			},
@@ -160,5 +202,20 @@ export class PostService {
 				id,
 			},
 		})
+	}
+
+	private generateUniqueSlug = async (queriedName: string, number = 1) => {
+		const name = `${queriedName}-${number}`
+		const isExist = await this.prisma.post.findUnique({
+			where: {
+				slug: generateSlug(name),
+			},
+		})
+
+		if (!isExist) {
+			return name
+		} else {
+			return this.generateUniqueSlug(queriedName, number + 1)
+		}
 	}
 }

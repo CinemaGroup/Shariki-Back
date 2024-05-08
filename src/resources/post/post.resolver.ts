@@ -2,7 +2,7 @@ import { Args, Int, Mutation, Query, Resolver } from '@nestjs/graphql'
 import { QueryInput } from 'src/global/inputs/query.input'
 import { Auth } from '../auth/decorators/auth.decorator'
 import { UserRole } from '../user/enums/user-role.enum'
-import { Post } from './entities/post.entity'
+import { AllPosts, Post } from './entities/post.entity'
 import { PostInput } from './inputs/post.input'
 import { PostService } from './post.service'
 
@@ -10,9 +10,15 @@ import { PostService } from './post.service'
 export class PostResolver {
 	constructor(private readonly postService: PostService) {}
 
-	@Query(() => [Post], { name: 'posts' })
+	@Query(() => AllPosts, { name: 'posts' })
 	async getAll(@Args('query') input: QueryInput) {
 		return this.postService.getAll(input)
+	}
+
+	@Auth(UserRole.ADMIN)
+	@Query(() => Post, { name: 'postBySlug' })
+	async getBySlug(@Args('slug', { type: () => String }) slug: string) {
+		return this.postService.bySlug(slug)
 	}
 
 	// Admin Place
@@ -27,6 +33,12 @@ export class PostResolver {
 	@Mutation(() => Post, { name: 'togglePost' })
 	async togglePublished(@Args('id', { type: () => Int }) id: number) {
 		return this.postService.togglePublished(id)
+	}
+
+	@Auth(UserRole.ADMIN)
+	@Mutation(() => Post, { name: 'duplicatePost' })
+	async duplicate(@Args('id', { type: () => Int }) id: number) {
+		return this.postService.duplicate(id)
 	}
 
 	@Auth(UserRole.ADMIN)

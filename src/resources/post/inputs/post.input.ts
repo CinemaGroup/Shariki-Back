@@ -1,4 +1,5 @@
-import { Field, InputType, Int } from '@nestjs/graphql'
+import { Field, InputType } from '@nestjs/graphql'
+import { SelectInput } from 'src/global/inputs/select.input'
 
 @InputType()
 export class PostInput {
@@ -17,6 +18,6 @@ export class PostInput {
 	@Field(() => String)
 	bigPoster: string
 
-	@Field(() => [Int])
-	rubrics: number[]
+	@Field(() => [SelectInput])
+	rubrics: SelectInput[]
 }

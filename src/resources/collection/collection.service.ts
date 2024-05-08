@@ -166,7 +166,7 @@ export class CollectionService {
 
 	private generateUniqueSlug = async (queriedName: string, number = 1) => {
 		const name = `${queriedName}-${number}`
-		const isExist = await this.prisma.category.findUnique({
+		const isExist = await this.prisma.collection.findUnique({
 			where: {
 				slug: generateSlug(name),
 			},

@@ -12,6 +12,8 @@ import {
 import { extname, join } from 'path'
 import { PrismaService } from 'src/prisma/prisma.service'
 import { pipeline } from 'stream/promises'
+import { PaginationInput } from '../pagination/inputs/pagination.input'
+import { PaginationService } from '../pagination/pagination.service'
 import { FolderWithChild } from './entities/folder.entity'
 import { CreateFolderInput } from './inputs/create-folder.input'
 import { EditFileOrFolderNameInput } from './inputs/edit-file-or-folder-name.input'
@@ -19,7 +21,10 @@ import { UploadFilesInput } from './inputs/upload-files.input'
 
 @Injectable()
 export class StorageService {
-	constructor(private readonly prisma: PrismaService) {}
+	constructor(
+		private readonly prisma: PrismaService,
+		private readonly paginationService: PaginationService
+	) {}
 
 	async getDirectories(directoryPath: string) {
 		try {
@@ -49,11 +54,11 @@ export class StorageService {
 		}
 	}
 
-	async getFolderItems(parentPath: string) {
+	async getFolderItems(parentPath: string, input: PaginationInput) {
 		try {
 			const items = readdirSync(parentPath, { withFileTypes: true })
 
-			const files = []
+			let files = []
 			const folders = []
 
 			for (const item of items) {
@@ -80,10 +85,18 @@ export class StorageService {
 				}
 			}
 
-			return { folders, files }
+			const count: number = files.length
+
+			const { perPage, skip } = this.paginationService.getPagination(input)
+
+			if (input.perPage && input.page) {
+				files = files.slice(skip, skip + perPage)
+			}
+
+			return { folders, files, count }
 		} catch (error) {
 			console.error(`Error reading directory ${parentPath}: ${error.message}`)
-			return { files: [], folders: [] }
+			return { files: [], folders: [], count: 0 }
 		}
 	}
 

@@ -22,57 +22,52 @@ export class ProductService {
 
 	async getAll(
 		input: QueryProductInput,
-		isSale?: boolean,
+		isPopular?: boolean,
 		categorySlug?: string
 	) {
 		const { perPage, skip } = this.paginationService.getPagination(input)
 
 		let filters = this.createFilter(input)
 
-		if (isSale) {
-			filters.oldPrice = { not: null }
-		}
-
 		if (categorySlug) {
-			filters = {
-				...filters,
-				categories: {
-					some: {
-						slug: categorySlug,
-						OR: [
-							{ categories: { some: { slug: categorySlug } } },
-							{
-								categories: {
-									some: { categories: { some: { slug: categorySlug } } },
-								},
-							},
-							{
-								categories: {
-									some: {
-										categories: {
-											some: { categories: { some: { slug: categorySlug } } },
-										},
-									},
-								},
-							},
-							{
-								categories: {
-									some: {
-										categories: {
-											some: {
-												categories: {
-													some: {
-														categories: { some: { slug: categorySlug } },
-													},
+			const category = await this.prisma.category.findUnique({
+				where: {
+					slug: categorySlug,
+				},
+				include: {
+					categories: {
+						include: {
+							categories: {
+								include: {
+									categories: {
+										include: {
+											categories: {
+												include: {
+													categories: true,
 												},
 											},
 										},
 									},
 								},
 							},
-						],
+						},
 					},
 				},
+			})
+			const slugs = this.getAllCategorySlugs(category)
+			filters = {
+				AND: [
+					filters,
+					{
+						categories: {
+							some: {
+								slug: {
+									in: slugs.map((slug) => slug),
+								},
+							},
+						},
+					},
+				],
 			}
 		}
 
@@ -98,6 +93,10 @@ export class ProductService {
 
 		const count = filteredProducts.length
 
+		if (isPopular) {
+			filteredProducts = this.shuffleArray(filteredProducts)
+		}
+
 		if (input.perPage && input.page) {
 			filteredProducts = filteredProducts.slice(skip, skip + perPage)
 		}
@@ -108,49 +107,88 @@ export class ProductService {
 		}
 	}
 
+	private shuffleArray(array: any[]) {
+		for (let i = array.length - 1; i > 0; i--) {
+			const j = Math.floor(Math.random() * (i + 1))
+			;[array[i], array[j]] = [array[j], array[i]]
+		}
+		return array
+	}
+
+	private getAllCategorySlugs(category): string[] {
+		let slugs = [category.slug]
+
+		if (category.categories && category.categories.length > 0) {
+			for (const subCategory of category.categories) {
+				const subCategorySlugs = this.getAllCategorySlugs(subCategory)
+				slugs = slugs.concat(subCategorySlugs)
+			}
+		}
+
+		return slugs
+	}
+
 	async allProducts(input: QueryProductInput, categorySlug?: string) {
 		let filters = this.createFilter(input)
 
+		let rootCategory = null
+
 		if (categorySlug) {
-			filters = {
-				...filters,
-				categories: {
-					some: {
-						slug: categorySlug,
-						OR: [
-							{ categories: { some: { slug: categorySlug } } },
-							{
-								categories: {
-									some: { categories: { some: { slug: categorySlug } } },
-								},
-							},
-							{
-								categories: {
-									some: {
-										categories: {
-											some: { categories: { some: { slug: categorySlug } } },
-										},
-									},
-								},
-							},
-							{
-								categories: {
-									some: {
-										categories: {
-											some: {
-												categories: {
-													some: {
-														categories: { some: { slug: categorySlug } },
-													},
+			rootCategory = await this.prisma.category.findUnique({
+				where: {
+					slug: categorySlug,
+				},
+				include: {
+					categories: {
+						include: {
+							categories: {
+								include: {
+									categories: {
+										include: {
+											categories: {
+												include: {
+													categories: true,
 												},
 											},
 										},
 									},
 								},
 							},
-						],
+						},
+					},
+					parent: {
+						include: {
+							parent: {
+								include: {
+									parent: {
+										include: {
+											parent: {
+												include: {
+													parent: true,
+												},
+											},
+										},
+									},
+								},
+							},
+						},
 					},
 				},
+			})
+			const slugs = this.getAllCategorySlugs(rootCategory)
+			filters = {
+				AND: [
+					filters,
+					{
+						categories: {
+							some: {
+								slug: {
+									in: slugs.map((slug) => slug),
+								},
+							},
+						},
+					},
+				],
 			}
 		}
 
@@ -178,7 +216,10 @@ export class ProductService {
 			})
 		}
 
-		return products
+		return {
+			products,
+			rootCategory,
+		}
 	}
 
 	private createFilter(input: QueryProductInput): Prisma.ProductWhereInput {
@@ -207,6 +248,8 @@ export class ProductService {
 			filters.push(this.getHolidaysFilter(input.holidays))
 		if (input.countries && input.countries.length > 0)
 			filters.push(this.getCountriesFilter(input.countries))
+		if (input.tags && input.tags.length > 0)
+			filters.push(this.getTagsFilter(input.tags))
 
 		return filters.length ? { AND: filters } : {}
 	}
@@ -348,6 +391,18 @@ export class ProductService {
 				some: {
 					slug: {
 						in: holidays.map((holiday) => holiday),
+					},
+				},
+			},
+		}
+	}
+
+	private getTagsFilter(tags: string[]): Prisma.ProductWhereInput {
+		return {
+			tags: {
+				some: {
+					slug: {
+						in: tags.map((tag) => tag),
 					},
 				},
 			},
@@ -571,7 +626,7 @@ export class ProductService {
 
 	private generateUniqueSlug = async (queriedName: string, number = 1) => {
 		const name = `${queriedName}-${number}`
-		const isExist = await this.prisma.category.findUnique({
+		const isExist = await this.prisma.product.findUnique({
 			where: {
 				slug: generateSlug(name),
 			},

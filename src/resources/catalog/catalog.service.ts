@@ -23,10 +23,8 @@ export class CatalogService {
 			const fetchedCategories = await this.categoryService.getAll(
 				categoryInput,
 				{
-					parents: {
-						some: {
-							slug: categorySlug,
-						},
+					parent: {
+						slug: categorySlug,
 					},
 				}
 			)
@@ -42,12 +40,14 @@ export class CatalogService {
 			categorySlug
 		)
 
-		const allProducts = await this.productService.allProducts(productInput)
+		const { products: allProducts, rootCategory } =
+			await this.productService.allProducts(productInput, categorySlug)
 
 		const filters = await this.filtersService.getFilters(allProducts as any[])
 
 		return {
 			categories,
+			rootCategory,
 			products: (products || []) as any[],
 			filters: filters || null,
 			productsCount: count || 0,

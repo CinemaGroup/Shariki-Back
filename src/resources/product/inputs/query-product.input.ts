@@ -30,6 +30,9 @@ export class QueryProductInput extends QueryInput {
 	@Field(() => [String], { nullable: true })
 	countries?: string[]
 
+	@Field(() => [String], { nullable: true })
+	tags?: string[]
+
 	@Field(() => String, { nullable: true })
 	min?: string
 

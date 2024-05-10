@@ -236,8 +236,7 @@ model Characteristic {
   slug String             @unique
   type CharacteristicType @default(COLLECTION)
 
-  product   Product? @relation(fields: [productId], references: [id], onDelete: Cascade)
-  productId Int?     @map("product_id")
+  products   Product[]
 
   status Status @default(HIDDEN)
 

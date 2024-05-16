@@ -12,7 +12,7 @@ export class Holiday {
 
 	@Field(() => String)
 	slug: string
-	
+
 	@Field(() => [Product])
 	products: Product[]
 
@@ -24,4 +24,13 @@ export class Holiday {
 
 	@Field(() => Date)
 	createdAt: Date
+}
+
+@ObjectType()
+export class AllHolidays {
+	@Field(() => [Holiday])
+	holidays: Holiday[]
+
+	@Field(() => Int)
+	count: number
 }

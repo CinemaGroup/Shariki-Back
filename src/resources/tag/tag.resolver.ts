@@ -2,7 +2,7 @@ import { Args, Int, Mutation, Query, Resolver } from '@nestjs/graphql'
 import { QueryInput } from 'src/global/inputs/query.input'
 import { Auth } from '../auth/decorators/auth.decorator'
 import { UserRole } from '../user/enums/user-role.enum'
-import { Tag } from './entities/tag.entity'
+import { AllTags, Tag } from './entities/tag.entity'
 import { TagInput } from './inputs/tag.input'
 import { TagService } from './tag.service'
 
@@ -10,7 +10,7 @@ import { TagService } from './tag.service'
 export class TagResolver {
 	constructor(private readonly tagService: TagService) {}
 
-	@Query(() => [Tag], { name: 'tags' })
+	@Query(() => AllTags, { name: 'tags' })
 	async getAll(@Args('query') input: QueryInput) {
 		return this.tagService.getAll(input)
 	}

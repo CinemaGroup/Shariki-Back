@@ -48,13 +48,22 @@ export class CategoryService {
 			}
 		}
 
-		return this.prisma.category.findMany({
+		const categories = await this.prisma.category.findMany({
 			where: filters,
 			orderBy: this.getAllSortOption(input.sort),
 			skip,
 			take: perPage,
-			include: categoryInclude
+			include: categoryInclude,
 		})
+
+		const count = await this.prisma.category.count({
+			where: filters,
+		})
+
+		return {
+			categories: categories || [],
+			count: count || 0,
+		}
 	}
 
 	private createFilter(input: QueryInput) {

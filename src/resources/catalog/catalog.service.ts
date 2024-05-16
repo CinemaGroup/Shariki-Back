@@ -20,18 +20,16 @@ export class CatalogService {
 	}: CatalogInput) {
 		let categories
 		if (categorySlug) {
-			const fetchedCategories = await this.categoryService.getAll(
-				categoryInput,
-				{
+			const { categories: fetchedCategories } =
+				await this.categoryService.getAll(categoryInput, {
 					parent: {
 						slug: categorySlug,
 					},
-				}
-			)
-			categories = fetchedCategories || []
+				})
+			categories = fetchedCategories
 		} else {
-			const fetchedCategories = await this.categoryService.getAll(categoryInput)
-			categories = fetchedCategories || []
+			const { categories: fetchedCategories } = await this.categoryService.getAll(categoryInput)
+			categories = fetchedCategories
 		}
 
 		const { products, count } = await this.productService.getAll(

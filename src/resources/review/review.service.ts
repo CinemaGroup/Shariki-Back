@@ -1,11 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common'
-import { PrismaService } from 'src/prisma/prisma.service'
-import { PaginationService } from '../pagination/pagination.service'
-import { QueryInput } from 'src/global/inputs/query.input'
 import { Prisma } from '@prisma/client'
 import { Sort, Status } from 'src/global/enums/query.enum'
+import { QueryInput } from 'src/global/inputs/query.input'
+import { PrismaService } from 'src/prisma/prisma.service'
+import { PaginationService } from '../pagination/pagination.service'
 import { ReviewInput } from './inputs/review.input'
-import { generateSlug } from 'src/utils/generateSlug'
 
 @Injectable()
 export class ReviewService {
@@ -19,12 +18,21 @@ export class ReviewService {
 
 		const filters = this.createFilter(input)
 
-		return this.prisma.review.findMany({
+		const reviews = await this.prisma.review.findMany({
 			where: filters,
 			orderBy: this.getAllSortOption(input.sort),
 			skip,
 			take: perPage,
 		})
+
+		const count = await this.prisma.review.count({
+			where: filters,
+		})
+
+		return {
+			reviews: reviews || [],
+			count: count || 0,
+		}
 	}
 
 	private createFilter(input: QueryInput): Prisma.ReviewWhereInput {
@@ -86,9 +94,7 @@ export class ReviewService {
 			},
 			data: {
 				status:
-					review.status === Status.PUBLISHED
-						? Status.HIDDEN
-						: Status.PUBLISHED,
+					review.status === Status.PUBLISHED ? Status.HIDDEN : Status.PUBLISHED,
 			},
 		})
 	}

@@ -23,12 +23,21 @@ export class TagService {
 
 		const filters = this.createFilter(input)
 
-		return this.prisma.tag.findMany({
+		const tags = await this.prisma.tag.findMany({
 			where: filters,
 			orderBy: this.getAllSortOption(input.sort),
 			skip,
 			take: perPage,
 		})
+
+		const count = await this.prisma.tag.count({
+			where: filters,
+		})
+
+		return {
+			tags: tags || [],
+			count: count || 0,
+		}
 	}
 
 	private createFilter(input: QueryInput): Prisma.TagWhereInput {

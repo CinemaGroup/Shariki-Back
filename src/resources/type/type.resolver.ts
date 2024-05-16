@@ -2,7 +2,7 @@ import { Args, Int, Mutation, Query, Resolver } from '@nestjs/graphql'
 import { QueryInput } from 'src/global/inputs/query.input'
 import { Auth } from '../auth/decorators/auth.decorator'
 import { UserRole } from '../user/enums/user-role.enum'
-import { Type } from './entities/type.entity'
+import { AllTypes, Type } from './entities/type.entity'
 import { TypeInput } from './inputs/type.input'
 import { TypeService } from './type.service'
 
@@ -10,7 +10,7 @@ import { TypeService } from './type.service'
 export class TypeResolver {
 	constructor(private readonly typeService: TypeService) {}
 
-	@Query(() => [Type], { name: 'types' })
+	@Query(() => AllTypes, { name: 'types' })
 	async getAll(@Args('query') input: QueryInput) {
 		return this.typeService.getAll(input)
 	}

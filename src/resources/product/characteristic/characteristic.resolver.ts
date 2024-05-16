@@ -3,14 +3,14 @@ import { QueryInput } from 'src/global/inputs/query.input'
 import { Auth } from 'src/resources/auth/decorators/auth.decorator'
 import { UserRole } from 'src/resources/user/enums/user-role.enum'
 import { CharacteristicService } from './characteristic.service'
-import { Characteristic } from './entities/characteristic.entity'
+import { AllCharacteristics, Characteristic } from './entities/characteristic.entity'
 import { CharacteristicInput } from './inputs/characteristic.input'
 
 @Resolver()
 export class CharacteristicResolver {
 	constructor(private readonly characteristicService: CharacteristicService) {}
 
-	@Query(() => [Characteristic], { name: 'characteristics' })
+	@Query(() => AllCharacteristics, { name: 'characteristics' })
 	async getAll(@Args('query') input: QueryInput) {
 		return this.characteristicService.getAll(input)
 	}

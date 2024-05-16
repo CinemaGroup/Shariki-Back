@@ -24,3 +24,12 @@ export class Review {
 	@Field(() => Date)
 	createdAt: Date
 }
+
+@ObjectType()
+export class AllReviews {
+	@Field(() => [Review])
+	reviews: Review[]
+
+	@Field(() => Int)
+	count: number
+}

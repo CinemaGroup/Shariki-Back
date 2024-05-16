@@ -25,3 +25,12 @@ export class Rubric {
 	@Field(() => Date)
 	createdAt: Date
 }
+
+@ObjectType()
+export class AllRubrics {
+	@Field(() => [Rubric])
+	rubrics: Rubric[]
+
+	@Field(() => Int)
+	count: number
+}

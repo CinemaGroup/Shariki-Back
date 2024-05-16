@@ -23,12 +23,21 @@ export class RubricService {
 
 		const filters = this.createFilter(input)
 
-		return this.prisma.rubric.findMany({
+		const rubrics = await this.prisma.rubric.findMany({
 			where: filters,
 			orderBy: this.getAllSortOption(input.sort),
 			skip,
 			take: perPage,
 		})
+
+		const count = await this.prisma.rubric.count({
+			where: filters,
+		})
+
+		return {
+			rubrics: rubrics || [],
+			count: count || 0,
+		}
 	}
 
 	private createFilter(input: QueryInput): Prisma.RubricWhereInput {

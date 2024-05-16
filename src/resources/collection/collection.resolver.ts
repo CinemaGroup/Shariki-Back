@@ -3,14 +3,14 @@ import { QueryInput } from 'src/global/inputs/query.input'
 import { Auth } from '../auth/decorators/auth.decorator'
 import { UserRole } from '../user/enums/user-role.enum'
 import { CollectionService } from './collection.service'
-import { Collection } from './entities/collection.entity'
+import { AllCollections, Collection } from './entities/collection.entity'
 import { CollectionInput } from './inputs/collection.input'
 
 @Resolver()
 export class CollectionResolver {
 	constructor(private readonly collectionService: CollectionService) {}
 
-	@Query(() => [Collection], { name: 'collections' })
+	@Query(() => AllCollections, { name: 'collections' })
 	async getAll(@Args('query') input: QueryInput) {
 		return this.collectionService.getAll(input)
 	}

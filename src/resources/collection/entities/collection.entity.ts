@@ -25,3 +25,12 @@ export class Collection {
 	@Field(() => Date)
 	createdAt: Date
 }
+
+@ObjectType()
+export class AllCollections {
+	@Field(() => [Collection])
+	collections: Collection[]
+
+	@Field(() => Int)
+	count: number
+}

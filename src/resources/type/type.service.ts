@@ -7,9 +7,9 @@ import { Prisma, Status } from '@prisma/client'
 import { Sort } from 'src/global/enums/query.enum'
 import { QueryInput } from 'src/global/inputs/query.input'
 import { PrismaService } from 'src/prisma/prisma.service'
+import { generateSlug } from 'src/utils/generateSlug'
 import { PaginationService } from '../pagination/pagination.service'
 import { TypeInput } from './inputs/type.input'
-import { generateSlug } from 'src/utils/generateSlug'
 
 @Injectable()
 export class TypeService {
@@ -23,12 +23,18 @@ export class TypeService {
 
 		const filters = this.createFilter(input)
 
-		return this.prisma.type.findMany({
+		const types = await this.prisma.type.findMany({
 			where: filters,
 			orderBy: this.getAllSortOption(input.sort),
 			skip,
 			take: perPage,
 		})
+
+		const count = await this.prisma.type.count({
+			where: filters,
+		})
+
+		return { types: types || [], count: count || 0 }
 	}
 
 	private createFilter(input: QueryInput): Prisma.TypeWhereInput {

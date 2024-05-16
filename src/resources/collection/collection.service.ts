@@ -23,12 +23,21 @@ export class CollectionService {
 
 		const filters = this.createFilter(input)
 
-		return this.prisma.collection.findMany({
+		const collections = await this.prisma.collection.findMany({
 			where: filters,
 			orderBy: this.getAllSortOption(input.sort),
 			skip,
 			take: perPage,
 		})
+
+		const count = await this.prisma.collection.count({
+			where: filters,
+		})
+
+		return {
+			collections: collections || [],
+			count: count || 0,
+		}
 	}
 
 	private createFilter(input: QueryInput): Prisma.CollectionWhereInput {

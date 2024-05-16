@@ -37,3 +37,12 @@ export class Category {
 	@Field(() => Date)
 	createdAt: Date
 }
+
+@ObjectType()
+export class AllCategories {
+	@Field(() => [Category])
+	categories: Category[]
+
+	@Field(() => Int)
+	count: number
+}

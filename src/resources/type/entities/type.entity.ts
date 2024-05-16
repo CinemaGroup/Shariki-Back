@@ -31,3 +31,12 @@ export class Type {
 	@Field(() => Date)
 	createdAt: Date
 }
+
+@ObjectType()
+export class AllTypes {
+	@Field(() => [Type])
+	types: Type[]
+
+	@Field(() => Int)
+	count: number
+}

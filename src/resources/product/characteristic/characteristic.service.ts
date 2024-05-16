@@ -23,12 +23,21 @@ export class CharacteristicService {
 
 		const filters = this.createFilter(input)
 
-		return this.prisma.characteristic.findMany({
+		const characteristics = await this.prisma.characteristic.findMany({
 			where: filters,
 			orderBy: this.getAllSortOption(input.sort),
 			skip,
 			take: perPage,
 		})
+
+		const count = await this.prisma.characteristic.count({
+			where: filters,
+		})
+
+		return {
+			characteristics: characteristics || [],
+			count: count || 0,
+		}
 	}
 
 	private createFilter(input: QueryInput): Prisma.CharacteristicWhereInput {
@@ -59,7 +68,9 @@ export class CharacteristicService {
 		}
 	}
 
-	private getSearchTermFilter(searchTerm: string): Prisma.CharacteristicWhereInput {
+	private getSearchTermFilter(
+		searchTerm: string
+	): Prisma.CharacteristicWhereInput {
 		return {
 			name: {
 				contains: searchTerm,
@@ -76,7 +87,8 @@ export class CharacteristicService {
 			},
 		})
 
-		if (!characteristic) throw new NotFoundException('Характеристика не найдена.')
+		if (!characteristic)
+			throw new NotFoundException('Характеристика не найдена.')
 
 		return characteristic
 	}

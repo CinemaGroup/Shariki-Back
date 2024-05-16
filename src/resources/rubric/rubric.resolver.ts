@@ -2,7 +2,7 @@ import { Args, Int, Mutation, Query, Resolver } from '@nestjs/graphql'
 import { QueryInput } from 'src/global/inputs/query.input'
 import { Auth } from '../auth/decorators/auth.decorator'
 import { UserRole } from '../user/enums/user-role.enum'
-import { Rubric } from './entities/rubric.entity'
+import { AllRubrics, Rubric } from './entities/rubric.entity'
 import { RubricInput } from './inputs/rubric.input'
 import { RubricService } from './rubric.service'
 
@@ -10,7 +10,7 @@ import { RubricService } from './rubric.service'
 export class RubricResolver {
 	constructor(private readonly rubricService: RubricService) {}
 
-	@Query(() => [Rubric], { name: 'rubrics' })
+	@Query(() => AllRubrics, { name: 'rubrics' })
 	async getAll(@Args('query') input: QueryInput) {
 		return this.rubricService.getAll(input)
 	}

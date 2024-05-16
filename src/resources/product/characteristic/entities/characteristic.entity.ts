@@ -24,3 +24,12 @@ export class Characteristic {
 	@Field(() => Date)
 	createdAt: Date
 }
+
+@ObjectType()
+export class AllCharacteristics {
+	@Field(() => [Characteristic])
+	characteristics: Characteristic[]
+
+	@Field(() => Int)
+	count: number
+}

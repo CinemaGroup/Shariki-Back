@@ -28,3 +28,12 @@ export class Tag {
 	@Field(() => Date)
 	createdAt: Date
 }
+
+@ObjectType()
+export class AllTags {
+	@Field(() => [Tag])
+	tags: Tag[]
+
+	@Field(() => Int)
+	count: number
+}

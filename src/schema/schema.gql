@@ -12,9 +12,49 @@ input AboutInput {
   name: String!
 }
 
+type AllCategories {
+  categories: [Category!]!
+  count: Int!
+}
+
+type AllCharacteristics {
+  characteristics: [Characteristic!]!
+  count: Int!
+}
+
+type AllCollections {
+  collections: [Collection!]!
+  count: Int!
+}
+
+type AllHolidays {
+  count: Int!
+  holidays: [Holiday!]!
+}
+
 type AllPosts {
   count: Int!
   posts: [Post!]!
+}
+
+type AllReviews {
+  count: Int!
+  reviews: [Review!]!
+}
+
+type AllRubrics {
+  count: Int!
+  rubrics: [Rubric!]!
+}
+
+type AllTags {
+  count: Int!
+  tags: [Tag!]!
+}
+
+type AllTypes {
+  count: Int!
+  types: [Type!]!
 }
 
 input AuthLoginInput {
@@ -429,17 +469,17 @@ type ProfileResponse {
 type Query {
   about: About!
   catalog(data: CatalogInput!): Catalog!
-  categories(query: QueryCategoryInput!): [Category!]!
+  categories(query: QueryCategoryInput!): AllCategories!
   categoryById(id: Int!): Category!
   characteristicById(id: Int!): Characteristic!
-  characteristics(query: QueryInput!): [Characteristic!]!
+  characteristics(query: QueryInput!): AllCharacteristics!
   collectionById(id: Int!): Collection!
-  collections(query: QueryInput!): [Collection!]!
+  collections(query: QueryInput!): AllCollections!
   folderItems(folderPath: String!, query: PaginationInput!): StorageItem!
   folders: [FolderWithChild!]!
   forBuyers: ForBuyers!
   holidayById(id: Int!): Holiday!
-  holidays(query: QueryInput!): [Holiday!]!
+  holidays(query: QueryInput!): AllHolidays!
   postById(id: Int!): Post!
   postBySlug(slug: String!): Post!
   posts(query: QueryInput!): AllPosts!
@@ -448,14 +488,14 @@ type Query {
   products(isPopular: Boolean, query: QueryProductInput!): CatalogProduct!
   profile: ProfileResponse!
   reviewById(id: Int!): Review!
-  reviews(query: QueryInput!): [Review!]!
+  reviews(query: QueryInput!): AllReviews!
   rubricById(id: Int!): Rubric!
-  rubrics(query: QueryInput!): [Rubric!]!
+  rubrics(query: QueryInput!): AllRubrics!
   shippingAndPayment: ShippingAndPayment!
   tagById(id: Int!): Tag!
-  tags(query: QueryInput!): [Tag!]!
+  tags(query: QueryInput!): AllTags!
   typeById(id: Int!): Type!
-  types(query: QueryInput!): [Type!]!
+  types(query: QueryInput!): AllTypes!
   users: [User!]!
 }
 

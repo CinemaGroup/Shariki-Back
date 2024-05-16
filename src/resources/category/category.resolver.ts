@@ -2,7 +2,7 @@ import { Args, Int, Mutation, Query, Resolver } from '@nestjs/graphql'
 import { Auth } from '../auth/decorators/auth.decorator'
 import { UserRole } from '../user/enums/user-role.enum'
 import { CategoryService } from './category.service'
-import { Category } from './entities/category.entity'
+import { AllCategories, Category } from './entities/category.entity'
 import { CategoryInput } from './inputs/category.input'
 import { QueryCategoryInput } from './inputs/query-category.input'
 
@@ -10,7 +10,7 @@ import { QueryCategoryInput } from './inputs/query-category.input'
 export class CategoryResolver {
 	constructor(private readonly categoryService: CategoryService) {}
 
-	@Query(() => [Category], { name: 'categories' })
+	@Query(() => AllCategories, { name: 'categories' })
 	async getAll(@Args('query') input: QueryCategoryInput) {
 		return this.categoryService.getAll(input)
 	}

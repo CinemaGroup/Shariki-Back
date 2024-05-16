@@ -3,14 +3,14 @@ import { UserRole } from '../user/enums/user-role.enum'
 import { HolidayService } from './holiday.service'
 import { QueryInput } from 'src/global/inputs/query.input'
 import { Auth } from '../auth/decorators/auth.decorator'
-import { Holiday } from './entities/holiday.entity'
+import { AllHolidays, Holiday } from './entities/holiday.entity'
 import { HolidayInput } from './inputs/holiday.input'
 
 @Resolver()
 export class HolidayResolver {
 	constructor(private readonly holidayService: HolidayService) {}
 
-	@Query(() => [Holiday], { name: 'holidays' })
+	@Query(() => AllHolidays, { name: 'holidays' })
 	async getAll(@Args('query') input: QueryInput) {
 		return this.holidayService.getAll(input)
 	}

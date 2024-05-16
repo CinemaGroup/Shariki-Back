@@ -2,7 +2,7 @@ import { Args, Int, Mutation, Query, Resolver } from '@nestjs/graphql'
 import { QueryInput } from 'src/global/inputs/query.input'
 import { Auth } from '../auth/decorators/auth.decorator'
 import { UserRole } from '../user/enums/user-role.enum'
-import { Review } from './entities/review.entity'
+import { AllReviews, Review } from './entities/review.entity'
 import { ReviewInput } from './inputs/review.input'
 import { ReviewService } from './review.service'
 
@@ -10,7 +10,7 @@ import { ReviewService } from './review.service'
 export class ReviewResolver {
 	constructor(private readonly reviewService: ReviewService) {}
 
-	@Query(() => [Review], { name: 'reviews' })
+	@Query(() => AllReviews, { name: 'reviews' })
 	async getAll(@Args('query') input: QueryInput) {
 		return this.reviewService.getAll(input)
 	}

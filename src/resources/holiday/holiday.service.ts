@@ -23,12 +23,21 @@ export class HolidayService {
 
 		const filters = this.createFilter(input)
 
-		return this.prisma.holiday.findMany({
+		const holidays = this.prisma.holiday.findMany({
 			where: filters,
 			orderBy: this.getAllSortOption(input.sort),
 			skip,
 			take: perPage,
 		})
+
+		const count = this.prisma.holiday.count({
+			where: filters,
+		})
+
+		return {
+			holidays: holidays || [],
+			count: count || 0,
+		}
 	}
 
 	private createFilter(input: QueryInput): Prisma.HolidayWhereInput {

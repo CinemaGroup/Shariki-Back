@@ -32,6 +32,11 @@ type AllHolidays {
   holidays: [Holiday!]!
 }
 
+type AllOrders {
+  count: Int!
+  orders: [Order!]!
+}
+
 type AllPosts {
   count: Int!
   posts: [Post!]!
@@ -290,6 +295,7 @@ type Mutation {
   deleteCollection(id: Int!): Collection!
   deleteFileOrFolder(path: String!): String!
   deleteHoliday(id: Int!): Holiday!
+  deleteOrder(id: Int!): Order!
   deletePost(id: Int!): Post!
   deleteProduct(id: Int!): Product!
   deleteReview(id: Int!): Review!
@@ -309,6 +315,7 @@ type Mutation {
   editFileOrFolderName(data: EditFileOrFolderNameInput!): String!
   login(data: AuthLoginInput!): AuthResponse!
   logout: Boolean!
+  placeOrder(data: PlaceOrderInput!): Order!
   register(data: AuthRegisterInput!): AuthResponse!
   toggleCategory(id: Int!): Category!
   toggleCharacteristic(id: Int!): Characteristic!
@@ -326,6 +333,7 @@ type Mutation {
   updateCollection(data: CollectionInput!, id: Int!): Collection!
   updateForBuyers(data: ForBuyersInput!): ForBuyers!
   updateHoliday(data: HolidayInput!, id: Int!): Holiday!
+  updateOrder(data: UpdateOrderInput!, id: Int!): Order!
   updatePost(data: PostInput!, id: Int!): Post!
   updateProduct(data: ProductInput!, id: Int!): Product!
   updateReview(data: ReviewInput!, id: Int!): Review!
@@ -340,24 +348,23 @@ type Order {
   createdAt: DateTime!
   id: Int!
   items: [OrderItem!]!
-  method: PaymentMethod!
+  name: String!
+  phone: String!
   status: OrderStatus!
   total: Int!
   updatedAt: DateTime!
-  user: User!
-  userId: Int!
 }
 
 type OrderItem {
+  color: String
   createdAt: DateTime!
   id: Int!
-  oldPrice: Float
   order: Order!
   orderId: Int!
-  price: Float!
   product: Product!
   productId: Int!
   quantity: Int!
+  size: String
   updatedAt: DateTime!
 }
 
@@ -365,9 +372,7 @@ enum OrderStatus {
   CANCELED
   COMPLETED
   IN_PROCESS
-  ON_HOLD
   PENDING
-  REFUNDED
 }
 
 input PaginationInput {
@@ -375,8 +380,19 @@ input PaginationInput {
   perPage: String
 }
 
-enum PaymentMethod {
-  YOOKASSA
+input PlaceOrderInput {
+  items: [PlaceOrderItemInput!]!
+  name: String!
+  orderStatus: OrderStatus!
+  phone: String!
+  total: String!
+}
+
+input PlaceOrderItemInput {
+  color: String
+  productId: Int!
+  quantity: Int!
+  size: String
 }
 
 type Post {
@@ -480,6 +496,8 @@ type Query {
   forBuyers: ForBuyers!
   holidayById(id: Int!): Holiday!
   holidays(query: QueryInput!): AllHolidays!
+  orderById(id: Int!): Order!
+  orders(query: QueryInput!): AllOrders!
   postById(id: Int!): Post!
   postBySlug(slug: String!): Post!
   posts(query: QueryInput!): AllPosts!
@@ -655,6 +673,10 @@ input TypeInput {
   iconPath: String!
   name: String!
   uncheckedIconPath: String!
+}
+
+input UpdateOrderInput {
+  orderStatus: OrderStatus!
 }
 
 """The `Upload` scalar type represents a file upload."""

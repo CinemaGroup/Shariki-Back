@@ -22,17 +22,6 @@ enum PaymentMethod {
   @@map("payment_method")
 }
 
-enum OrderStatus {
-  PENDING // Ожидание оплаты
-  IN_PROCESS // Заказ в процессе
-  ON_HOLD // Заказ на удержании
-  COMPLETED // Заказ закончен успешно
-  CANCELED // Заказ отменен
-  REFUNDED // Возврат средств
-
-  @@map("order_status")
-}
-
 enum Status {
   PUBLISHED
   HIDDEN
@@ -49,6 +38,53 @@ enum CharacteristicType {
   COLOR
 
   @@map("characteristics_type")
+}
+
+enum OrderStatus {
+  PENDING
+  IN_PROCESS
+  COMPLETED
+  CANCELED
+  ON_HOLD
+  REFUNDED
+
+  @@map("order_status")
+}
+
+model Order {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  status OrderStatus @default(PENDING) @map("order_status")
+  total  String
+
+  name  String
+  phone String
+
+  items OrderItem[]
+
+  @@map("order")
+}
+
+model OrderItem {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  quantity Int
+
+  color String?
+  size  String?
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  order   Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId Int   @map("order_id")
+
+  productId Int @map("product_id")
+
+  @@map("order_item")
 }
 
 model Billing {
@@ -91,7 +127,6 @@ model User {
   updatedAt DateTime @updatedAt @map("updated_at")
 
   profile Profile?
-  orders  Order[]
 
   role       UserRole @default(USER)
   isVerified Boolean  @default(false) @map("is_verified")
@@ -236,7 +271,7 @@ model Characteristic {
   slug String             @unique
   type CharacteristicType @default(COLLECTION)
 
-  products   Product[]
+  products Product[]
 
   status Status @default(HIDDEN)
 
@@ -262,6 +297,7 @@ model Product {
   sizes           Size[]
   colors          Color[]
   characteristics Characteristic[]
+  orderItems      OrderItem[]
 
   views       Int @default(0)
   boughtTimes Int @default(0) @map("bought_times")
@@ -271,8 +307,6 @@ model Product {
   tags        Tag[]
   holidays    Holiday[]
   collections Collection[]
-
-  orderItems OrderItem[]
 
   status Status @default(HIDDEN)
 
@@ -327,41 +361,6 @@ model Review {
   status Status @default(HIDDEN)
 
   @@map("review")
-}
-
-model Order {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-
-  method PaymentMethod
-  status OrderStatus   @default(PENDING)
-  total  Int
-
-  items OrderItem[]
-
-  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId Int  @map("user_id")
-
-  @@map("order")
-}
-
-model OrderItem {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-
-  quantity Int
-  oldPrice Float?  @map("old_price")
-  price    Float
-  product  Product @relation(fields: [productId], references: [id])
-
-  productId Int @map("product_id")
-
-  order   Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  orderId Int   @map("order_id")
-
-  @@map("order_item")
 }
 
 model ShippingAndPayment {

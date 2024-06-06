@@ -89,7 +89,25 @@ type Billing {
   updatedAt: DateTime!
 }
 
+type Block {
+  content: String!
+  heading: String!
+}
+
+input BlockInput {
+  content: String!
+  heading: String!
+  type: BlockType
+}
+
+enum BlockType {
+  HOME_FIRST
+  HOME_SECOND
+  HOME_THIRD
+}
+
 type Catalog {
+  block: Block
   categories: [Category!]!
   filters: Filters!
   products: [Product!]!
@@ -123,9 +141,11 @@ type Category {
 }
 
 input CategoryInput {
+  block: BlockInput
   imagePath: String
   name: String!
   parent: SelectInput
+  seo: SeoInput
 }
 
 type Characteristic {
@@ -334,6 +354,7 @@ type Mutation {
   updateForBuyers(data: ForBuyersInput!): ForBuyers!
   updateHoliday(data: HolidayInput!, id: Int!): Holiday!
   updateOrder(data: UpdateOrderInput!, id: Int!): Order!
+  updatePage(data: PageInput!, type: PageType!): Boolean!
   updatePost(data: PostInput!, id: Int!): Post!
   updateProduct(data: ProductInput!, id: Int!): Product!
   updateReview(data: ReviewInput!, id: Int!): Review!
@@ -373,6 +394,22 @@ enum OrderStatus {
   COMPLETED
   IN_PROCESS
   PENDING
+}
+
+type Page {
+  blocks: [Block!]
+  seo: Seo
+}
+
+input PageInput {
+  blocks: [BlockInput!]
+  seo: SeoInput
+}
+
+enum PageType {
+  CATALOG
+  HOME
+  POSTS
 }
 
 input PaginationInput {
@@ -416,6 +453,7 @@ input PostInput {
   name: String!
   poster: String!
   rubrics: [SelectInput!]!
+  seo: SeoInput
 }
 
 type Product {
@@ -459,6 +497,7 @@ input ProductInput {
   oldPrice: String
   packageQuantity: String!
   price: String!
+  seo: SeoInput
   sizes: [SizeInput!]!
   sku: String!
   tags: [SelectInput!]!
@@ -487,6 +526,7 @@ type Query {
   catalog(data: CatalogInput!): Catalog!
   categories(query: QueryCategoryInput!): AllCategories!
   categoryById(id: Int!): Category!
+  categorySeo(slug: String!): Seo
   characteristicById(id: Int!): Characteristic!
   characteristics(query: QueryInput!): AllCharacteristics!
   collectionById(id: Int!): Collection!
@@ -498,11 +538,16 @@ type Query {
   holidays(query: QueryInput!): AllHolidays!
   orderById(id: Int!): Order!
   orders(query: QueryInput!): AllOrders!
+  page(type: PageType!): Page!
+  pageBlock(type: BlockType!): Block
+  pageSeo(type: PageType!): Seo
   postById(id: Int!): Post!
   postBySlug(slug: String!): Post!
+  postSeo(slug: String!): Seo
   posts(query: QueryInput!): AllPosts!
   productById(id: Int!): Product!
   productBySlug(slug: String!): CurrentProduct!
+  productSeo(slug: String!): Seo
   products(isPopular: Boolean, query: QueryProductInput!): CatalogProduct!
   profile: ProfileResponse!
   reviewById(id: Int!): Review!
@@ -592,6 +637,16 @@ input RubricInput {
 input SelectInput {
   name: String!
   value: Int!
+}
+
+type Seo {
+  description: String!
+  title: String!
+}
+
+input SeoInput {
+  description: String!
+  title: String!
 }
 
 type ShippingAndPayment {

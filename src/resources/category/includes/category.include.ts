@@ -1,4 +1,4 @@
-import { Prisma } from '@prisma/client'
+import type { Prisma } from '@prisma/client'
 
 export const categoryInclude: Prisma.CategoryInclude = {
 	parent: {
@@ -18,4 +18,6 @@ export const categoryInclude: Prisma.CategoryInclude = {
 			},
 		},
 	},
+	seo: true,
+	block: true
 }

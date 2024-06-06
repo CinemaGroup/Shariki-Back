@@ -8,6 +8,7 @@ import { Sort, Status } from 'src/global/enums/query.enum'
 import { PrismaService } from 'src/prisma/prisma.service'
 import { generateSlug } from 'src/utils/generateSlug'
 import { PaginationService } from '../pagination/pagination.service'
+import { seoSelect } from '../seo/select/seo.select'
 import { CharacteristicType } from './characteristic/enum/characteristic.enum'
 import { productInclude } from './includes/product.include'
 import { ProductInput } from './inputs/product.input'
@@ -409,6 +410,21 @@ export class ProductService {
 		}
 	}
 
+	async getSeo(slug: string) {
+		const product = await this.prisma.product.findUnique({
+			where: {
+				slug,
+			},
+			select: {
+				seo: {
+					select: seoSelect,
+				},
+			},
+		})
+
+		return product.seo
+	}
+
 	async bySlug(slug: string) {
 		const product = await this.prisma.product.findUnique({
 			where: {
@@ -517,6 +533,14 @@ export class ProductService {
 				holidays: {
 					connect: product.holidays.map((item) => ({ id: item.id })),
 				},
+				seo: {
+					create: product.seo
+						? {
+								title: product.seo.title,
+								description: product.seo.description,
+						  }
+						: undefined,
+				},
 				status: Status.PUBLISHED,
 			},
 		})
@@ -610,6 +634,15 @@ export class ProductService {
 				collections: {
 					disconnect: product.collections.map((item) => ({ id: item.id })),
 					connect: input.collections.map((item) => ({ id: item.value })),
+				},
+				seo: {
+					delete: product.seo ? true : false,
+					create: input.seo
+						? {
+								title: input.seo.title,
+								description: input.seo.description,
+						  }
+						: undefined,
 				},
 				status: Status.PUBLISHED,
 			},

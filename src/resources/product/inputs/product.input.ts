@@ -2,6 +2,7 @@ import { Field, InputType } from '@nestjs/graphql'
 import { SelectInput } from 'src/global/inputs/select.input'
 import { ColorInput } from '../color/inputs/color.input'
 import { SizeInput } from '../size/inputs/size.input'
+import { SeoInput } from 'src/resources/seo/inputs/seo.input'
 
 @InputType()
 export class ProductInput {
@@ -52,4 +53,7 @@ export class ProductInput {
 
 	@Field(() => [SelectInput])
 	collections: SelectInput[]
+
+	@Field(() => SeoInput, { nullable: true })
+	seo?: SeoInput
 }

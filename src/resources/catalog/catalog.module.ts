@@ -6,6 +6,7 @@ import { CatalogResolver } from './catalog.resolver'
 import { CatalogService } from './catalog.service'
 import { PrismaService } from 'src/prisma/prisma.service'
 import { PaginationService } from '../pagination/pagination.service'
+import { PageService } from '../page/page.service'
 
 @Module({
 	providers: [
@@ -15,7 +16,8 @@ import { PaginationService } from '../pagination/pagination.service'
 		ProductService,
 		FiltersService,
 		PrismaService,
-		PaginationService
+		PaginationService,
+		PageService
 	],
 })
 export class CatalogModule {}

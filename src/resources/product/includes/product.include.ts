@@ -5,6 +5,7 @@ export const productInclude: Prisma.ProductInclude = {
 	colors: true,
 	characteristics: true,
 	types: true,
+	seo: true,
 	categories: {
 		include: {
 			categories: {

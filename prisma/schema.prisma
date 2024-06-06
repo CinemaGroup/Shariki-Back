@@ -51,6 +51,75 @@ enum OrderStatus {
   @@map("order_status")
 }
 
+enum BlockType {
+  HOME_FIRST
+  HOME_SECOND
+  HOME_THIRD
+
+  @@map("block_type")
+}
+
+enum PageType {
+  HOME
+  CATALOG
+  POSTS
+
+  @@map("page_type")
+}
+
+model Page {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  seo    Seo?
+  blocks Block[]
+
+  type PageType @unique
+
+  @@map("page")
+}
+
+model Block {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  heading String
+  content String
+
+  type BlockType? @unique
+
+  category   Category? @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  categoryId Int?      @unique @map("category_id")
+  page       Page?     @relation(fields: [pageId], references: [id], onDelete: Cascade)
+  pageId     Int?      @map("page_id")
+
+  @@map("block")
+}
+
+model Seo {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  title       String
+  description String
+
+  type PageType? @unique
+
+  category   Category? @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  categoryId Int?      @unique @map("category_id")
+  post       Post?     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId     Int?      @unique @map("post_id")
+  product    Product?  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId  Int?      @unique @map("product_id")
+  page       Page?     @relation(fields: [pageId], references: [id], onDelete: Cascade)
+  pageId     Int?      @unique @map("page_id")
+
+  @@map("seo")
+}
+
 model Order {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now()) @map("created_at")
@@ -204,6 +273,8 @@ model Category {
   imagePath String?
 
   products Product[]
+  block    Block?
+  seo      Seo?
 
   categories Category[] @relation("ParentCategories")
 
@@ -307,6 +378,7 @@ model Product {
   tags        Tag[]
   holidays    Holiday[]
   collections Collection[]
+  seo         Seo?
 
   status Status @default(HIDDEN)
 
@@ -343,6 +415,7 @@ model Post {
   bigPoster   String @map("big_poster")
 
   rubrics Rubric[]
+  seo     Seo?
 
   status Status @default(HIDDEN)
 

@@ -11,6 +11,7 @@ import { generateSlug } from 'src/utils/generateSlug'
 import { PaginationService } from '../pagination/pagination.service'
 import { postInclude } from './includes/post.include'
 import { PostInput } from './inputs/post.input'
+import { seoSelect } from '../seo/select/seo.select'
 
 @Injectable()
 export class PostService {
@@ -77,6 +78,21 @@ export class PostService {
 		}
 	}
 
+	async getSeo(slug: string) {
+		const post = await this.prisma.post.findUnique({
+			where: {
+				slug,
+			},
+			select: {
+				seo: {
+					select: seoSelect,
+				},
+			},
+		})
+
+		return post.seo
+	}
+
 	async bySlug(slug: string) {
 		const post = await this.prisma.post.findUnique({
 			where: {
@@ -133,6 +149,14 @@ export class PostService {
 				rubrics: {
 					connect: post.rubrics.map((rubric) => ({ id: rubric.id })),
 				},
+				seo: post.seo
+					? {
+							create: {
+								title: post.seo.title,
+								description: post.seo.description,
+							},
+					  }
+					: undefined,
 				status: Status.PUBLISHED,
 			},
 		})
@@ -189,6 +213,15 @@ export class PostService {
 				bigPoster: input.bigPoster,
 				rubrics: {
 					connect: input.rubrics.map((rubric) => ({ id: rubric.value })),
+				},
+				seo: {
+					delete: post.seo ? true : false,
+					create: input.seo
+						? {
+								title: input.seo.title,
+								description: input.seo.description,
+						  }
+						: undefined,
 				},
 				status: Status.PUBLISHED,
 			},

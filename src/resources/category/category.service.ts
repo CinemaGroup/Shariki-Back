@@ -8,7 +8,9 @@ import { Sort } from 'src/global/enums/query.enum'
 import { QueryInput } from 'src/global/inputs/query.input'
 import { PrismaService } from 'src/prisma/prisma.service'
 import { generateSlug } from 'src/utils/generateSlug'
+import { blockSelect } from '../block/select/block.select'
 import { PaginationService } from '../pagination/pagination.service'
+import { seoSelect } from '../seo/select/seo.select'
 import { categoryInclude } from './includes/category.include'
 import { CategoryInput } from './inputs/category.input'
 import { QueryCategoryInput } from './inputs/query-category.input'
@@ -64,6 +66,34 @@ export class CategoryService {
 			categories: categories || [],
 			count: count || 0,
 		}
+	}
+
+	async getBlock(slug: string) {
+		return this.prisma.category.findUnique({
+			where: {
+				slug,
+			},
+			select: {
+				block: {
+					select: blockSelect,
+				},
+			},
+		})
+	}
+
+	async getSeo(slug: string) {
+		const category = await this.prisma.category.findUnique({
+			where: {
+				slug,
+			},
+			select: {
+				seo: {
+					select: seoSelect,
+				},
+			},
+		})
+
+		return category.seo
 	}
 
 	private createFilter(input: QueryInput) {
@@ -147,6 +177,22 @@ export class CategoryService {
 							connect: { id: category.parentId },
 					  }
 					: undefined,
+				seo: category.seo
+					? {
+							create: {
+								title: category.seo.title,
+								description: category.seo.description,
+							},
+					  }
+					: undefined,
+				block: category.block
+					? {
+							create: {
+								heading: category.block.heading,
+								content: category.block.content,
+							},
+					  }
+					: undefined,
 				status: Status.PUBLISHED,
 			},
 		})
@@ -199,6 +245,24 @@ export class CategoryService {
 							connect: { id: input.parent.value },
 					  }
 					: undefined,
+				seo: {
+					delete: category.seo ? true : false,
+					create: input.seo
+						? {
+								title: input.seo.title,
+								description: input.seo.description,
+						  }
+						: undefined,
+				},
+				block: {
+					delete: category.block ? true : false,
+					create: input.seo
+						? {
+								heading: input.block.heading,
+								content: input.block.content,
+						  }
+						: undefined,
+				},
 				status: Status.PUBLISHED,
 			},
 		})

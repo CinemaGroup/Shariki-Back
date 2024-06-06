@@ -1,7 +1,12 @@
 import { Args, Int, Mutation, Query, Resolver } from '@nestjs/graphql'
 import { Auth } from '../auth/decorators/auth.decorator'
+import { Seo } from '../seo/entities/seo.entity'
 import { UserRole } from '../user/enums/user-role.enum'
-import { CatalogProduct, CurrentProduct, Product } from './entities/product.entity'
+import {
+	CatalogProduct,
+	CurrentProduct,
+	Product,
+} from './entities/product.entity'
 import { ProductInput } from './inputs/product.input'
 import { QueryProductInput } from './inputs/query-product.input'
 import { ProductService } from './product.service'
@@ -13,9 +18,15 @@ export class ProductResolver {
 	@Query(() => CatalogProduct, { name: 'products' })
 	async getAll(
 		@Args('query') input: QueryProductInput,
-		@Args('isPopular', { type: () => Boolean, nullable: true }) isPopular?: boolean
+		@Args('isPopular', { type: () => Boolean, nullable: true })
+		isPopular?: boolean
 	) {
 		return this.productService.getAll(input, isPopular)
+	}
+
+	@Query(() => Seo, { name: 'productSeo', nullable: true })
+	async getSeo(@Args('slug') slug: string) {
+		return this.productService.getSeo(slug)
 	}
 
 	@Query(() => CurrentProduct, { name: 'productBySlug' })

@@ -22,6 +22,9 @@ import { CollectionModule } from './resources/collection/collection.module';
 import { CatalogModule } from './resources/catalog/catalog.module';
 import { FiltersModule } from './resources/filters/filters.module';
 import { PagesModule } from './resources/pages/pages.module';
+import { BlockModule } from './resources/block/block.module';
+import { SeoModule } from './resources/seo/seo.module';
+import { PageModule } from './resources/page/page.module'
 
 @Module({
 	imports: [
@@ -51,6 +54,9 @@ import { PagesModule } from './resources/pages/pages.module';
 		CatalogModule,
 		FiltersModule,
 		PagesModule,
+		BlockModule,
+		SeoModule,
+		PageModule
 	],
 	controllers: [AppController],
 	providers: [AppService],

@@ -1,5 +1,6 @@
 import { Field, InputType } from '@nestjs/graphql'
 import { SelectInput } from 'src/global/inputs/select.input'
+import { SeoInput } from 'src/resources/seo/inputs/seo.input'
 
 @InputType()
 export class PostInput {
@@ -20,4 +21,7 @@ export class PostInput {
 
 	@Field(() => [SelectInput])
 	rubrics: SelectInput[]
+
+	@Field(() => SeoInput, { nullable: true })
+	seo?: SeoInput
 }

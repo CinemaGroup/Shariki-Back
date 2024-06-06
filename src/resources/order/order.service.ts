@@ -39,6 +39,8 @@ export class OrderService {
 	}
 
 	async placeOrder(input: PlaceOrderInput) {
+		
+
 		return this.prisma.order.create({
 			data: {
 				status: input.orderStatus,

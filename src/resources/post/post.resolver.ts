@@ -1,6 +1,7 @@
 import { Args, Int, Mutation, Query, Resolver } from '@nestjs/graphql'
 import { QueryInput } from 'src/global/inputs/query.input'
 import { Auth } from '../auth/decorators/auth.decorator'
+import { Seo } from '../seo/entities/seo.entity'
 import { UserRole } from '../user/enums/user-role.enum'
 import { AllPosts, Post } from './entities/post.entity'
 import { PostInput } from './inputs/post.input'
@@ -13,6 +14,11 @@ export class PostResolver {
 	@Query(() => AllPosts, { name: 'posts' })
 	async getAll(@Args('query') input: QueryInput) {
 		return this.postService.getAll(input)
+	}
+
+	@Query(() => Seo, { name: 'postSeo', nullable: true })
+	async getSeo(@Args('slug') slug: string) {
+		return this.postService.getSeo(slug)
 	}
 
 	@Auth(UserRole.ADMIN)

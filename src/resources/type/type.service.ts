@@ -137,7 +137,7 @@ export class TypeService {
 
 	async update(id: number, input: TypeInput) {
 		const type = await this.byId(id)
-		console.log(input)
+		
 		const isExists = await this.prisma.type.findUnique({
 			where: {
 				slug: generateSlug(input.name),

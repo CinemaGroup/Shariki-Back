@@ -3,6 +3,7 @@ import { Prisma } from '@prisma/client'
 import { Sort } from 'src/global/enums/query.enum'
 import { QueryInput } from 'src/global/inputs/query.input'
 import { PrismaService } from 'src/prisma/prisma.service'
+import { MailService } from '../mail/mail.service'
 import { PaginationService } from '../pagination/pagination.service'
 import { orderInclude } from './includes/order.include'
 import { PlaceOrderInput } from './inputs/place-order.input'
@@ -12,7 +13,8 @@ import { UpdateOrderInput } from './inputs/update-order.input'
 export class OrderService {
 	constructor(
 		private readonly prisma: PrismaService,
-		private readonly paginationService: PaginationService
+		private readonly paginationService: PaginationService,
+		private readonly mailService: MailService
 	) {}
 
 	async getAll(input: QueryInput) {
@@ -39,9 +41,7 @@ export class OrderService {
 	}
 
 	async placeOrder(input: PlaceOrderInput) {
-		
-
-		return this.prisma.order.create({
+		const order = await this.prisma.order.create({
 			data: {
 				status: input.orderStatus,
 				items: {
@@ -58,7 +58,46 @@ export class OrderService {
 				name: input.name,
 				phone: input.phone,
 			},
+			include: {
+				items: {
+					include: {
+						product: true,
+					},
+				},
+			},
 		})
+
+		const emailContent = `
+		<h1>Новый заказ</h1>
+		<p>Имя: <b>${order.name}</b></p>
+		<p>Телефон: <b>${order.phone}</b></p>
+		<p>Общее количество товаров: <b>${order.items.length}</b></p>
+		<h2>Детали заказа:</h2>
+		<ul>
+			${order.items
+				.map(
+					(item) => `
+				<li>
+					<p>Продукт: <b>${item.product.name}</b></p>
+					<p>Количество: <b>${item.quantity}</b></p>
+					${item.color ? `<p>Цвет: <b>${item.color}</b></p>` : ''}
+					${item.size ? `<p>Размер: <b>${item.size}</b></p>` : ''}
+					<p>Цена: <b>${item.product.price}</b></p>
+				</li>
+			`
+				)
+				.join('')}
+		</ul>
+		<p>Общая сумма: <b>${order.total} ₽</b></p>
+	`
+
+		await this.mailService.sendEmail({
+			subject: 'Новый заказ',
+			email: process.env.EMAIL_ADMIN,
+			html: emailContent,
+		})
+
+		return order
 	}
 
 	private createFilter(input: QueryInput): Prisma.OrderWhereInput {

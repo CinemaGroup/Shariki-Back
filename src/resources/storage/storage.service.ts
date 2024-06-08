@@ -141,7 +141,6 @@ export class StorageService {
 
 			return `Success`
 		} catch (error) {
-			console.log(error)
 			return `Error`
 		}
 	}
@@ -154,7 +153,6 @@ export class StorageService {
 
 			return `Success`
 		} catch (error) {
-			console.log(error)
 			return `Error`
 		}
 	}
@@ -197,7 +195,6 @@ export class StorageService {
 				[optionName]: newPath ? `/${newPath}` : '',
 			},
 		})
-		console.log(newPath)
 	}
 
 	private async getFolderSize(folderPath: string) {

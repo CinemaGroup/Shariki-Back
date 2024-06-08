@@ -10,6 +10,7 @@ import { AuthService } from '../auth/auth.service'
 import { JwtStrategy } from '../auth/strategies/jwt.strategy'
 import { PaginationService } from '../pagination/pagination.service'
 import { UserService } from '../user/user.service'
+import { MailService } from '../mail/mail.service'
 
 @Module({
 	providers: [
@@ -20,6 +21,7 @@ import { UserService } from '../user/user.service'
 		AuthService,
 		JwtStrategy,
 		UserService,
+		MailService
 	],
 	imports: [
 		ConfigModule,

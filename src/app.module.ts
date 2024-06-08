@@ -25,6 +25,7 @@ import { PagesModule } from './resources/pages/pages.module';
 import { BlockModule } from './resources/block/block.module';
 import { SeoModule } from './resources/seo/seo.module';
 import { PageModule } from './resources/page/page.module'
+import { MailModule } from './resources/mail/mail.module';
 
 @Module({
 	imports: [
@@ -56,7 +57,8 @@ import { PageModule } from './resources/page/page.module'
 		PagesModule,
 		BlockModule,
 		SeoModule,
-		PageModule
+		PageModule,
+		MailModule
 	],
 	controllers: [AppController],
 	providers: [AppService],

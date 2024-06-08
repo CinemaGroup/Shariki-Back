@@ -106,6 +106,11 @@ enum BlockType {
   HOME_THIRD
 }
 
+input CallRequestInput {
+  name: String!
+  phone: String!
+}
+
 type Catalog {
   block: Block
   categories: [Category!]!
@@ -337,6 +342,7 @@ type Mutation {
   logout: Boolean!
   placeOrder(data: PlaceOrderInput!): Order!
   register(data: AuthRegisterInput!): AuthResponse!
+  sendCallRequest(data: CallRequestInput!): Boolean!
   toggleCategory(id: Int!): Category!
   toggleCharacteristic(id: Int!): Characteristic!
   toggleCollection(id: Int!): Collection!

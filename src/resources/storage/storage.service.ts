@@ -10,7 +10,6 @@ import {
 	statSync,
 } from 'fs-extra'
 import { extname, join } from 'path'
-import { PrismaService } from 'src/prisma/prisma.service'
 import { pipeline } from 'stream/promises'
 import { PaginationInput } from '../pagination/inputs/pagination.input'
 import { PaginationService } from '../pagination/pagination.service'
@@ -21,10 +20,7 @@ import { UploadFilesInput } from './inputs/upload-files.input'
 
 @Injectable()
 export class StorageService {
-	constructor(
-		private readonly prisma: PrismaService,
-		private readonly paginationService: PaginationService
-	) {}
+	constructor(private readonly paginationService: PaginationService) {}
 
 	async getDirectories(directoryPath: string) {
 		try {
@@ -57,41 +53,49 @@ export class StorageService {
 	async getFolderItems(parentPath: string, input: PaginationInput) {
 		try {
 			const items = readdirSync(parentPath, { withFileTypes: true })
-
-			let files = []
 			const folders = []
+			let files = []
+
+			const { perPage, skip } = this.paginationService.getPagination(input)
+
+			let fileCount = 0
+			let folderCount = 0
 
 			for (const item of items) {
+				if (fileCount >= skip + perPage && folderCount >= skip + perPage) {
+					break
+				}
+
 				const fullPath = `${parentPath}/${item.name}`
 				const stats = statSync(fullPath)
 
 				if (item.isDirectory()) {
-					const folderSize = await this.getFolderSize(fullPath)
-					folders.push({
-						name: item.name,
-						size: this.formatBytes(folderSize),
-						count: this.countItemsInFolder(fullPath),
-						path: fullPath,
-						createdAt: stats.birthtime,
-					})
+					if (folderCount >= skip && folderCount < skip + perPage) {
+						const folderSize = await this.getFolderSize(fullPath)
+						folders.push({
+							name: item.name,
+							size: this.formatBytes(folderSize),
+							count: this.countItemsInFolder(fullPath),
+							path: fullPath,
+							createdAt: stats.birthtime,
+						})
+					}
+					folderCount++
 				} else {
-					files.push({
-						name: item.name,
-						size: this.formatBytes(stats.size),
-						extension: extname(item.name),
-						path: fullPath,
-						createdAt: stats.birthtime,
-					})
+					if (fileCount >= skip && fileCount < skip + perPage) {
+						files.push({
+							name: item.name,
+							size: this.formatBytes(stats.size),
+							extension: extname(item.name),
+							path: fullPath,
+							createdAt: stats.birthtime,
+						})
+					}
+					fileCount++
 				}
 			}
 
-			const count: number = files.length
-
-			const { perPage, skip } = this.paginationService.getPagination(input)
-
-			if (input.perPage && input.page) {
-				files = files.slice(skip, skip + perPage)
-			}
+			const count = items.filter((item) => !item.isDirectory()).length
 
 			return { folders, files, count }
 		} catch (error) {

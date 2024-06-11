@@ -14,7 +14,7 @@ module.exports = {
 				EMAIL_SERVICE: 'beget',
 				EMAIL_HOST: 'smtp.beget.com',
 				EMAIL_PORT: '465',
-				EMAIL_USER: 'support@keeywork.ru',
+				EMAIL_USER: 'support@скоропраздник.рф',
 				EMAIL_PASSWORD: 'Koribla-1',
 				EMAIL_ADMIN: 'skoroprazdnik@inbox.ru',
 			},

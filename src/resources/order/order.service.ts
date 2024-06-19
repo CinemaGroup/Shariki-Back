@@ -3,6 +3,7 @@ import { Prisma } from '@prisma/client'
 import { Sort } from 'src/global/enums/query.enum'
 import { QueryInput } from 'src/global/inputs/query.input'
 import { PrismaService } from 'src/prisma/prisma.service'
+import { generateSlug } from 'src/utils/generateSlug'
 import { MailService } from '../mail/mail.service'
 import { PaginationService } from '../pagination/pagination.service'
 import { orderInclude } from './includes/order.include'
@@ -78,7 +79,9 @@ export class OrderService {
 				.map(
 					(item) => `
 				<li>
-					<p>Продукт: <b>${item.product.name}</b></p>
+					<p>Продукт: <a href=https://скоропраздник.рф/product/${generateSlug(
+						item.product.name
+					)} target=_blank><b>${item.product.name}</b></a></p>
 					<p>Количество: <b>${item.quantity}</b></p>
 					${item.color ? `<p>Цвет: <b>${item.color}</b></p>` : ''}
 					${item.size ? `<p>Размер: <b>${item.size}</b></p>` : ''}

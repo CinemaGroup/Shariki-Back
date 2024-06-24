@@ -561,6 +561,7 @@ type Query {
   rubricById(id: Int!): Rubric!
   rubrics(query: QueryInput!): AllRubrics!
   shippingAndPayment: ShippingAndPayment!
+  sitemap: Sitemap!
   tagById(id: Int!): Tag!
   tags(query: QueryInput!): AllTags!
   typeById(id: Int!): Type!
@@ -667,6 +668,12 @@ input ShippingAndPaymentInput {
   paymentName: String!
   shippingContent: String!
   shippingName: String!
+}
+
+type Sitemap {
+  categoriesSlugs: [String!]!
+  postsSlugs: [String!]!
+  productsSlugs: [String!]!
 }
 
 type Size {

@@ -26,6 +26,7 @@ import { BlockModule } from './resources/block/block.module';
 import { SeoModule } from './resources/seo/seo.module';
 import { PageModule } from './resources/page/page.module'
 import { MailModule } from './resources/mail/mail.module';
+import { SitemapModule } from './resources/sitemap/sitemap.module';
 
 @Module({
 	imports: [
@@ -58,7 +59,8 @@ import { MailModule } from './resources/mail/mail.module';
 		BlockModule,
 		SeoModule,
 		PageModule,
-		MailModule
+		MailModule,
+		SitemapModule
 	],
 	controllers: [AppController],
 	providers: [AppService],

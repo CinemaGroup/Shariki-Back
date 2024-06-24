@@ -203,19 +203,6 @@ model User {
   @@map("user")
 }
 
-model Service {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-
-  name String @unique
-  slug String @unique
-
-  status Status @default(HIDDEN)
-
-  @@map("service")
-}
-
 model Holiday {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now()) @map("created_at")

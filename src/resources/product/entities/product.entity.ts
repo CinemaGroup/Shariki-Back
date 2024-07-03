@@ -9,6 +9,7 @@ import { Type } from 'src/resources/type/entities/type.entity'
 import { Characteristic } from '../characteristic/entities/characteristic.entity'
 import { Color } from '../color/entities/color.entity'
 import { Size } from '../size/entities/size.entity'
+import { Seo } from 'src/resources/seo/entities/seo.entity'
 
 @ObjectType()
 export class Product {
@@ -80,6 +81,9 @@ export class Product {
 
 	@Field(() => Int)
 	typeId: number
+
+	@Field(() => Seo)
+	seo: Seo
 
 	@Field(() => Date)
 	updatedAt: Date

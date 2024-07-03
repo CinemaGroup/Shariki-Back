@@ -479,6 +479,7 @@ type Product {
   orderItems: [OrderItem!]!
   packageQuantity: Int!
   price: String!
+  seo: Seo!
   sizes: [Size!]!
   sku: String!
   slug: String!
